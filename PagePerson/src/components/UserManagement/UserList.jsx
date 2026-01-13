@@ -10,7 +10,10 @@ function UserList({ refreshTrigger }) {
     const [error, setError] = useState('');
 
     // Kullanıcının SYSTEM_ADMIN olup olmadığını kontrol et
-    const isSystemAdmin = user?.roles?.includes('SYSTEM_ADMIN');
+    // roles array'i hem string hem object olabilir: ["SYSTEM_ADMIN"] veya [{name: "SYSTEM_ADMIN"}]
+    const isSystemAdmin = user?.roles?.some(role =>
+        typeof role === 'string' ? role === 'SYSTEM_ADMIN' : role.name === 'SYSTEM_ADMIN'
+    );
 
     const fetchUsers = async () => {
         setIsLoading(true);
@@ -33,7 +36,7 @@ function UserList({ refreshTrigger }) {
     }, [refreshTrigger]);
 
     const handleDelete = async (userId, email) => {
-        if (!window.confirm(`${email} kullanıcısını silmek istediğinizden emin misiniz?`)) {
+        if (!window.confirm(`${email} kullanıcısını silmek istediğinizden emin misiniz ? `)) {
             return;
         }
 
@@ -91,11 +94,18 @@ function UserList({ refreshTrigger }) {
                                 <td>{user.email}</td>
                                 <td>
                                     <div className="roles-badges">
-                                        {user.roles.map((role) => (
-                                            <span key={role} className={`role-badge role-${role.toLowerCase()}`}>
-                                                {role}
-                                            </span>
-                                        ))}
+                                        {user.roles.map((role, index) => {
+                                            // Role string veya object olabilir
+                                            const roleName = typeof role === 'string' ? role : role.name || role;
+                                            return (
+                                                <span
+                                                    key={`${user.userId}-${roleName}-${index}`}
+                                                    className={`role-badge role-${roleName.toLowerCase()}`}
+                                                >
+                                                    {roleName}
+                                                </span>
+                                            );
+                                        })}
                                     </div>
                                 </td>
                                 <td>
