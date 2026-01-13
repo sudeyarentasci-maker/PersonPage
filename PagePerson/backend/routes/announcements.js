@@ -128,9 +128,9 @@ router.get('/:id', authenticateToken, async (req, res) => {
 
 /**
  * PUT /api/announcements/:id
- * Duyuru güncelle (HR, ADMIN)
+ * Duyuru güncelle (SADECE HR)
  */
-router.put('/:id', authenticateToken, authorizeRoles('HR', 'SYSTEM_ADMIN'), async (req, res) => {
+router.put('/:id', authenticateToken, authorizeRoles('HR'), async (req, res) => {
     try {
         const { id } = req.params;
         const { title, content, targetRoles, priority, expiresAt, status } = req.body;
@@ -168,9 +168,9 @@ router.put('/:id', authenticateToken, authorizeRoles('HR', 'SYSTEM_ADMIN'), asyn
 
 /**
  * DELETE /api/announcements/:id
- * Duyuru sil (ADMIN)
+ * Duyuru sil (SADECE HR)
  */
-router.delete('/:id', authenticateToken, authorizeRoles('SYSTEM_ADMIN'), async (req, res) => {
+router.delete('/:id', authenticateToken, authorizeRoles('HR'), async (req, res) => {
     try {
         const { id } = req.params;
 

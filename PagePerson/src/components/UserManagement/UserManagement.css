@@ -92,17 +92,58 @@
 }
 
 .form-group input[type="email"],
-.form-group input[type="text"] {
+.form-group input[type="text"],
+.form-group input[type="date"],
+.form-group select {
     padding: 10px 14px;
     border: 2px solid #e0e0e0;
     border-radius: 8px;
     font-size: 15px;
-    transition: border 0.2s;
+    transition: all 0.2s;
+    background: white;
+    cursor: pointer;
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.form-group select:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: #7c3aed;
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+/* Select Enhancement - Custom Dropdown Arrow */
+.form-group select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23666' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+}
+
+.form-group select:hover {
+    border-color: #7c3aed;
+    background-color: #faf9fc;
+}
+
+/* Date Input Enhancement */
+.form-group input[type="date"] {
+    position: relative;
+    color: #333;
+}
+
+.form-group input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.form-group input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+}
+
+.form-group input[type="date"]:hover {
+    border-color: #7c3aed;
+    background-color: #faf9fc;
 }
 
 .roles-checkbox-group {

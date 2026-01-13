@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { getAnnouncements } from '../../services/announcementService';
+import { getAnnouncements, deleteAnnouncement } from '../../services/announcementService';
+import { useAuth } from '../../auth/AuthContext';
+import EditAnnouncementModal from './EditAnnouncementModal';
 import './AnnouncementList.css';
 
 function AnnouncementList() {
+    const { user } = useAuth();
     const [announcements, setAnnouncements] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [editingAnnouncement, setEditingAnnouncement] = useState(null);
+
+    // SADECE HR için duyuru yönetimi
+    const canManageAnnouncements = user?.roles?.some(role =>
+        typeof role === 'string' ? role === 'HR' : role.name === 'HR'
+    );
 
     useEffect(() => {
         fetchAnnouncements();
@@ -21,6 +30,34 @@ function AnnouncementList() {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleDelete = async (announcementId, title) => {
+        if (!window.confirm(`"${title}" duyurusunu silmek istediğinizden emin misiniz?`)) {
+            return;
+        }
+
+        try {
+            const result = await deleteAnnouncement(announcementId);
+            if (result.success) {
+                alert('✅ Duyuru silindi!');
+                fetchAnnouncements();
+            }
+        } catch (err) {
+            alert(err.response?.data?.message || 'Duyuru silinemedi');
+        }
+    };
+
+    const handleEdit = (announcement) => {
+        setEditingAnnouncement(announcement);
+    };
+
+    const handleCloseEditModal = () => {
+        setEditingAnnouncement(null);
+    };
+
+    const handleAnnouncementUpdated = () => {
+        fetchAnnouncements();
     };
 
     const getPriorityBadge = (priority) => {
@@ -63,6 +100,26 @@ function AnnouncementList() {
                         const priority = getPriorityBadge(announcement.priority);
                         return (
                             <div key={announcement.announcementId} className="announcement-card">
+                                {/* Hover Butonları - Sadece HR için */}
+                                {canManageAnnouncements && (
+                                    <div className="announcement-actions">
+                                        <button
+                                            className="action-btn edit-btn"
+                                            onClick={() => handleEdit(announcement)}
+                                            title="Düzenle"
+                                        >
+                                            ✏️
+                                        </button>
+                                        <button
+                                            className="action-btn delete-btn"
+                                            onClick={() => handleDelete(announcement.announcementId, announcement.title)}
+                                            title="Sil"
+                                        >
+                                            🗑️
+                                        </button>
+                                    </div>
+                                )}
+
                                 <div className="announcement-header">
                                     <h4>{announcement.title}</h4>
                                     <span className={`priority-badge ${priority.class}`}>
@@ -85,6 +142,14 @@ function AnnouncementList() {
                     })}
                 </div>
             )}
+
+            {/* Düzenleme Modal'ı */}
+            <EditAnnouncementModal
+                isOpen={!!editingAnnouncement}
+                onClose={handleCloseEditModal}
+                announcement={editingAnnouncement}
+                onAnnouncementUpdated={handleAnnouncementUpdated}
+            />
         </div>
     );
 }

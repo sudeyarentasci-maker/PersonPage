@@ -1,48 +1,101 @@
-/* Announcements Styles */
-
+/* Announcements Section */
 .announcements-section {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
+    background: white;
     border-radius: 12px;
-    padding: 20px;
+    padding: 25px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    margin-top: 20px;
+    margin-bottom: 30px;
 }
 
 .announcements-section h3 {
-    margin: 0 0 15px 0;
+    margin: 0 0 20px 0;
     color: #333;
-    font-size: 18px;
+    font-size: 20px;
 }
 
-.loading-text,
-.empty-announcements {
+.loading-text {
+    color: #888;
     text-align: center;
-    padding: 30px;
-    color: #999;
-    font-size: 14px;
+    padding: 20px;
 }
 
+.empty-announcements {
+    color: #888;
+    text-align: center;
+    padding: 40px;
+    font-style: italic;
+}
+
+/* Announcements Grid */
 .announcements-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 15px;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
 }
 
+/* Announcement Card */
 .announcement-card {
-    background: white;
-    border-radius: 10px;
-    padding: 18px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-    border-left: 4px solid #667eea;
-    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    /* Hover butonları için */
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s ease;
+    cursor: default;
 }
 
 .announcement-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    border-color: #d0d7de;
 }
 
+/* Hover Action Butonları */
+.announcement-actions {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 10;
+}
+
+.announcement-card:hover .announcement-actions {
+    opacity: 1;
+}
+
+.action-btn {
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.action-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.edit-btn:hover {
+    background: #fef3c7;
+}
+
+.delete-btn:hover {
+    background: #fee2e2;
+}
+
+/* Announcement Header */
 .announcement-header {
     display: flex;
     justify-content: space-between;
@@ -53,73 +106,81 @@
 
 .announcement-header h4 {
     margin: 0;
-    font-size: 16px;
-    color: #333;
+    color: #1a1a1a;
+    font-size: 18px;
+    font-weight: 600;
     flex: 1;
+    line-height: 1.4;
 }
 
+/* Priority Badges */
 .priority-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
     padding: 4px 10px;
     border-radius: 12px;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     white-space: nowrap;
 }
 
 .priority-high {
-    background: #fee2e2;
-    color: #dc2626;
-    border: 1px solid #fca5a5;
+    background: #fee;
+    color: #c33;
+    border: 1px solid #fcc;
 }
 
 .priority-normal {
-    background: #e0e7ff;
-    color: #4f46e5;
-    border: 1px solid #a5b4fc;
+    background: #e3f2fd;
+    color: #1976d2;
+    border: 1px solid #bbdefb;
 }
 
 .priority-low {
-    background: #f3f4f6;
-    color: #6b7280;
-    border: 1px solid #d1d5db;
+    background: #f5f5f5;
+    color: #666;
+    border: 1px solid #ddd;
 }
 
+/* Announcement Body */
 .announcement-body {
-    margin-bottom: 12px;
+    margin-bottom: 15px;
 }
 
 .announcement-body p {
     margin: 0;
-    font-size: 14px;
-    color: #666;
+    color: #555;
     line-height: 1.6;
+    font-size: 14px;
 }
 
+/* Announcement Footer */
 .announcement-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding-top: 12px;
-    border-top: 1px solid #f0f0f0;
-    font-size: 12px;
-    color: #888;
+    border-top: 1px solid #e9ecef;
+    font-size: 13px;
+    color: #666;
 }
 
 .announcement-author,
 .announcement-date {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 5px;
 }
 
+/* Responsive */
 @media (max-width: 768px) {
     .announcements-grid {
         grid-template-columns: 1fr;
     }
 
-    .announcement-footer {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 6px;
+    .announcement-actions {
+        opacity: 1;
+        /* Mobilde her zaman görünsün */
     }
 }
