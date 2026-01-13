@@ -173,6 +173,221 @@ router.get('/:userId', authenticateToken, authorizeRoles('HR', 'SYSTEM_ADMIN'), 
     }
 });
 
+
+/**
+ * PUT /api/users/:userId/email
+ * Kullanıcının email'ini değiştir (SADECE SYSTEM_ADMIN)
+ */
+router.put('/:userId/email', authenticateToken, authorizeRoles('SYSTEM_ADMIN'), async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { newEmail } = req.body;
+
+        if (!newEmail || !newEmail.includes('@')) {
+            return res.status(400).json({
+                success: false,
+                message: 'Geçerli bir email adresi giriniz.'
+            });
+        }
+
+        const db = getDatabase();
+
+        // Email benzersizliği kontrolü
+        const existingUser = await db.collection('users').findOne({ email: newEmail });
+        if (existingUser && existingUser.userId !== userId) {
+            return res.status(409).json({
+                success: false,
+                message: 'Bu email adresi zaten kullanılıyor.'
+            });
+        }
+
+        // Email güncelle
+        const result = await db.collection('users').updateOne(
+            { userId },
+            {
+                $set: {
+                    email: newEmail,
+                    updatedAt: new Date()
+                }
+            }
+        );
+
+        if (result.modifiedCount === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Kullanıcı bulunamadı.'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Email başarıyla güncellendi.'
+        });
+
+    } catch (error) {
+        console.error('Email güncelleme hatası:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Email güncellenemedi.'
+        });
+    }
+});
+
+/**
+ * PUT /api/users/:userId/password
+ * Kullanıcının şifresini değiştir (SADECE SYSTEM_ADMIN)
+ */
+router.put('/:userId/password', authenticateToken, authorizeRoles('SYSTEM_ADMIN'), async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { newPassword } = req.body;
+
+        if (!newPassword || newPassword.length < 6) {
+            return res.status(400).json({
+                success: false,
+                message: 'Şifre en az 6 karakter olmalıdır.'
+            });
+        }
+
+        // Şifreyi hash'le
+        const passwordHash = await User.hashPassword(newPassword);
+
+        const db = getDatabase();
+        const result = await db.collection('users').updateOne(
+            { userId },
+            {
+                $set: {
+                    passwordHash,
+                    updatedAt: new Date()
+                }
+            }
+        );
+
+        if (result.modifiedCount === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Kullanıcı bulunamadı.'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Şifre başarıyla güncellendi.'
+        });
+
+    } catch (error) {
+        console.error('Şifre güncelleme hatası:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Şifre güncellenemedi.'
+        });
+    }
+});
+
+/**
+ * PUT /api/users/:userId/roles
+ * Kullanıcının rollerini değiştir (SADECE SYSTEM_ADMIN)
+ */
+router.put('/:userId/roles', authenticateToken, authorizeRoles('SYSTEM_ADMIN'), async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { roleNames } = req.body;
+
+        if (!roleNames || !Array.isArray(roleNames) || roleNames.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'En az bir rol seçilmelidir.'
+            });
+        }
+
+        const db = getDatabase();
+
+        // Rolleri bul
+        const roles = await db.collection('roles')
+            .find({ name: { $in: roleNames } })
+            .toArray();
+
+        if (roles.length !== roleNames.length) {
+            return res.status(400).json({
+                success: false,
+                message: 'Geçersiz rol adı.'
+            });
+        }
+
+        // Önce mevcut rolleri sil
+        await db.collection('user_roles').deleteMany({ userId });
+
+        // Yeni rolleri ekle
+        const userRoles = roles.map(role => ({
+            userId,
+            roleId: role._id
+        }));
+
+        await db.collection('user_roles').insertMany(userRoles);
+
+        res.json({
+            success: true,
+            message: 'Roller başarıyla güncellendi.',
+            data: { roleNames }
+        });
+
+    } catch (error) {
+        console.error('Rol güncelleme hatası:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Roller güncellenemedi.'
+        });
+    }
+});
+
+/**
+ * PUT /api/users/:userId/status
+ * Kullanıcı durumunu değiştir (active/inactive) (SADECE SYSTEM_ADMIN)
+ */
+router.put('/:userId/status', authenticateToken, authorizeRoles('SYSTEM_ADMIN'), async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { status } = req.body;
+
+        if (!['ACTIVE', 'INACTIVE'].includes(status)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Geçersiz durum değeri. (ACTIVE veya INACTIVE)'
+            });
+        }
+
+        const db = getDatabase();
+        const result = await db.collection('users').updateOne(
+            { userId },
+            {
+                $set: {
+                    status,
+                    updatedAt: new Date()
+                }
+            }
+        );
+
+        if (result.modifiedCount === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Kullanıcı bulunamadı.'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: `Kullanıcı ${status === 'ACTIVE' ? 'aktif edildi' : 'deaktive edildi'}.`
+        });
+
+    } catch (error) {
+        console.error('Durum güncelleme hatası:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Durum güncellenemedi.'
+        });
+    }
+});
+
 /**
  * DELETE /api/users/:userId
  * Kullanıcıyı tamamen sil (SADECE SYSTEM_ADMIN)

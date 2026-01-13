@@ -3,6 +3,7 @@ import { useAuth } from '../auth/AuthContext';
 import CreateUserModal from '../components/UserManagement/CreateUserModal';
 import UserList from '../components/UserManagement/UserList';
 import AnnouncementList from '../components/Announcements/AnnouncementList';
+import SystemSettings from './SystemSettings';
 import { getAllLeaves } from '../services/leaveService';
 import './Dashboard.css';
 import './LeaveDashboard.css';
@@ -10,6 +11,7 @@ import './LeaveDashboard.css';
 function AdminDashboard() {
     const { user, logout } = useAuth();
     const [isUserModalOpen, setIsUserModalOpen] = useState(false);
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
     const [allLeaves, setAllLeaves] = useState([]);
 
@@ -39,7 +41,7 @@ function AdminDashboard() {
         } else if (section === 'roles') {
             alert('🎭 Rol Yönetimi\n\nBu özellik yakında eklenecek!\n\n- Rol oluşturma\n- Yetki atama\n- Rol düzenleme');
         } else if (section === 'settings') {
-            alert('⚙️ Sistem Ayarları\n\nYapılandırma Seçenekleri:\n\n- Genel ayarlar\n- Güvenlik politikaları\n- Email ayarları\n- Yedekleme ayarları');
+            setIsSettingsOpen(true);
         } else if (section === 'logs') {
             alert('📜 Sistem Logları\n\nLog Görüntüleme:\n\n- Kullanıcı aktiviteleri\n- Sistem hataları\n- Güvenlik olayları\n- API istekleri\n\nGerçek log sistemi yakında eklenecek!');
         }
@@ -156,6 +158,12 @@ function AdminDashboard() {
                 isOpen={isUserModalOpen}
                 onClose={() => setIsUserModalOpen(false)}
                 onUserCreated={handleUserCreated}
+            />
+
+            {/* Sistem Ayarları Modal */}
+            <SystemSettings
+                isOpen={isSettingsOpen}
+                onClose={() => setIsSettingsOpen(false)}
             />
         </div>
     );

@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { getAllUsers, deleteUser } from '../../services/userService';
+import { getAllUsers, deleteUser, updateUserStatus } from '../../services/userService';
 import { useAuth } from '../../auth/AuthContext';
+import UserActionsDropdown from './UserActionsDropdown';
+import ChangeEmailModal from './ChangeEmailModal';
+import ChangePasswordModal from './ChangePasswordModal';
+import ChangeRolesModal from './ChangeRolesModal';
 import './UserManagement.css';
 
 function UserList({ refreshTrigger }) {
@@ -9,8 +13,13 @@ function UserList({ refreshTrigger }) {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
 
-    // Kullanıcının SYSTEM_ADMIN olup olmadığını kontrol et
-    // roles array'i hem string hem object olabilir: ["SYSTEM_ADMIN"] veya [{name: "SYSTEM_ADMIN"}]
+    // Modal states
+    const [selectedUser, setSelectedUser] = useState(null);
+    const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
+    const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+    const [isRolesModalOpen, setIsRolesModalOpen] = useState(false);
+
+    // SYSTEM_ADMIN kontrolü
     const isSystemAdmin = user?.roles?.some(role =>
         typeof role === 'string' ? role === 'SYSTEM_ADMIN' : role.name === 'SYSTEM_ADMIN'
     );
@@ -36,38 +45,70 @@ function UserList({ refreshTrigger }) {
     }, [refreshTrigger]);
 
     const handleDelete = async (userId, email) => {
-        if (!window.confirm(`${email} kullanıcısını silmek istediğinizden emin misiniz ? `)) {
+        if (!window.confirm(`${email} kullanıcısını silmek istediğinizden emin misiniz?`)) {
             return;
         }
 
         try {
             const result = await deleteUser(userId);
             if (result.success) {
-                alert('Kullanıcı başarıyla silindi');
-                fetchUsers(); // Listeyi yenile
+                alert('✅ Kullanıcı başarıyla silindi');
+                fetchUsers();
             }
         } catch (err) {
             alert(err.response?.data?.message || 'Kullanıcı silinemedi');
         }
     };
 
+    const handleAction = async (action, targetUser) => {
+        setSelectedUser(targetUser);
+
+        switch (action) {
+            case 'email':
+                setIsEmailModalOpen(true);
+                break;
+            case 'password':
+                setIsPasswordModalOpen(true);
+                break;
+            case 'roles':
+                setIsRolesModalOpen(true);
+                break;
+            case 'status':
+                await handleStatusToggle(targetUser);
+                break;
+            case 'delete':
+                await handleDelete(targetUser.userId, targetUser.email);
+                break;
+            default:
+                break;
+        }
+    };
+
+    const handleStatusToggle = async (targetUser) => {
+        const newStatus = targetUser.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
+        const actionText = newStatus === 'ACTIVE' ? 'aktif edilsin' : 'deaktive edilsin';
+
+        if (!window.confirm(`${targetUser.email} kullanıcısı ${actionText} mi?`)) {
+            return;
+        }
+
+        try {
+            const result = await updateUserStatus(targetUser.userId, newStatus);
+            if (result.success) {
+                alert(`✅ Kullanıcı ${newStatus === 'ACTIVE' ? 'aktif edildi' : 'deaktive edildi'}`);
+                fetchUsers();
+            }
+        } catch (err) {
+            alert(err.response?.data?.message || 'Durum değiştirilemedi');
+        }
+    };
+
     if (isLoading) {
-        return (
-            <div className="loading-state">
-                <p>⏳ Kullanıcılar yükleniyor...</p>
-            </div>
-        );
+        return <div className="user-list">Yükleniyor...</div>;
     }
 
     if (error) {
-        return (
-            <div className="error-state">
-                <p>❌ {error}</p>
-                <button onClick={fetchUsers} className="btn-secondary">
-                    Tekrar Dene
-                </button>
-            </div>
-        );
+        return <div className="user-list error">{error}</div>;
     }
 
     return (
@@ -75,59 +116,94 @@ function UserList({ refreshTrigger }) {
             <h3>📋 Kullanıcı Listesi ({users.length})</h3>
 
             {users.length === 0 ? (
-                <p className="empty-state">Henüz kullanıcı yok.</p>
+                <p>Henüz kullanıcı bulunmuyor.</p>
             ) : (
-                <table className="users-table">
-                    <thead>
-                        <tr>
-                            <th>User ID</th>
-                            <th>Email</th>
-                            <th>Roller</th>
-                            <th>Durum</th>
-                            {isSystemAdmin && <th>İşlemler</th>}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {users.map((user) => (
-                            <tr key={user.userId}>
-                                <td><code>{user.userId}</code></td>
-                                <td>{user.email}</td>
-                                <td>
-                                    <div className="roles-badges">
-                                        {user.roles.map((role, index) => {
-                                            // Role string veya object olabilir
-                                            const roleName = typeof role === 'string' ? role : role.name || role;
-                                            return (
-                                                <span
-                                                    key={`${user.userId}-${roleName}-${index}`}
-                                                    className={`role-badge role-${roleName.toLowerCase()}`}
-                                                >
-                                                    {roleName}
-                                                </span>
-                                            );
-                                        })}
-                                    </div>
-                                </td>
-                                <td>
-                                    <span className={`status-badge status-${user.status.toLowerCase()}`}>
-                                        {user.status}
-                                    </span>
-                                </td>
-                                {isSystemAdmin && (
-                                    <td>
-                                        <button
-                                            className="delete-btn"
-                                            onClick={() => handleDelete(user.userId, user.email)}
-                                            title="Kullanıcıyı Sil"
-                                        >
-                                            🗑️
-                                        </button>
-                                    </td>
-                                )}
+                <div className="table-wrapper">
+                    <table className="users-table">
+                        <thead>
+                            <tr>
+                                <th>Kullanıcı ID</th>
+                                <th>Email</th>
+                                <th>Roller</th>
+                                <th>Durum</th>
+                                {isSystemAdmin && <th>İşlemler</th>}
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {users.map((u) => (
+                                <tr key={u.userId}>
+                                    <td>{u.userId}</td>
+                                    <td>{u.email}</td>
+                                    <td>
+                                        {u.roles && u.roles.length > 0 ? (
+                                            u.roles.map((role, index) => {
+                                                const roleName = typeof role === 'string' ? role : role.name || role;
+                                                return (
+                                                    <span
+                                                        key={`${u.userId}-${roleName}-${index}`}
+                                                        className={`role-badge role-${roleName.toLowerCase()}`}
+                                                    >
+                                                        {roleName}
+                                                    </span>
+                                                );
+                                            })
+                                        ) : (
+                                            <span className="no-role">Rol yok</span>
+                                        )}
+                                    </td>
+                                    <td>
+                                        <span className={`status-badge status-${u.status?.toLowerCase() || 'active'}`}>
+                                            {u.status === 'INACTIVE' ? 'Deaktif' : 'Aktif'}
+                                        </span>
+                                    </td>
+                                    {isSystemAdmin && (
+                                        <td>
+                                            <UserActionsDropdown
+                                                user={u}
+                                                onAction={handleAction}
+                                            />
+                                        </td>
+                                    )}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+
+            {/* Modals */}
+            {selectedUser && (
+                <>
+                    <ChangeEmailModal
+                        isOpen={isEmailModalOpen}
+                        onClose={() => {
+                            setIsEmailModalOpen(false);
+                            setSelectedUser(null);
+                        }}
+                        user={selectedUser}
+                        onSuccess={fetchUsers}
+                    />
+
+                    <ChangePasswordModal
+                        isOpen={isPasswordModalOpen}
+                        onClose={() => {
+                            setIsPasswordModalOpen(false);
+                            setSelectedUser(null);
+                        }}
+                        user={selectedUser}
+                        onSuccess={fetchUsers}
+                    />
+
+                    <ChangeRolesModal
+                        isOpen={isRolesModalOpen}
+                        onClose={() => {
+                            setIsRolesModalOpen(false);
+                            setSelectedUser(null);
+                        }}
+                        user={selectedUser}
+                        onSuccess={fetchUsers}
+                    />
+                </>
             )}
         </div>
     );

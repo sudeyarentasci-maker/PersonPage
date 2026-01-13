@@ -1,0 +1,306 @@
+/* System Settings Modal */
+.settings-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.settings-modal {
+    background: white;
+    border-radius: 16px;
+    width: 95%;
+    max-width: 900px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Header */
+.settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 28px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.settings-header h2 {
+    margin: 0;
+    font-size: 22px;
+    color: #333;
+}
+
+.settings-header .close-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #f5f5f5;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.settings-header .close-btn:hover {
+    background: #e0e0e0;
+    transform: scale(1.1);
+}
+
+/* Tabs */
+.settings-tabs {
+    display: flex;
+    gap: 8px;
+    padding: 16px 28px;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+    overflow-x: auto;
+}
+
+.tab-btn {
+    padding: 10px 20px;
+    border: none;
+    background: transparent;
+    color: #6b7280;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.tab-btn:hover {
+    background: rgba(124, 58, 237, 0.1);
+    color: #7c3aed;
+}
+
+.tab-btn.active {
+    background: #7c3aed;
+    color: white;
+    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
+}
+
+/* Message */
+.settings-message {
+    margin: 16px 28px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-10px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.settings-message.success {
+    background: #d1fae5;
+    border: 1px solid #6ee7b7;
+    color: #065f46;
+}
+
+.settings-message.error {
+    background: #fee2e2;
+    border: 1px solid #fca5a5;
+    color: #991b1b;
+}
+
+/* Content */
+.settings-content {
+    flex: 1;
+    padding: 24px 28px;
+    overflow-y: auto;
+}
+
+.settings-section {
+    max-width: 700px;
+}
+
+.settings-section h3 {
+    margin: 0 0 24px 0;
+    font-size: 18px;
+    color: #374151;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+/* Form */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    color: #4b5563;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"],
+.form-group input[type="number"],
+.form-group input[type="time"],
+.form-group select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: all 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #7c3aed;
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+    padding: 12px;
+    background: #f9fafb;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.checkbox-container:hover {
+    background: #f3f4f6;
+}
+
+.checkbox-container input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #7c3aed;
+}
+
+.checkbox-container span {
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+}
+
+/* Info Box */
+.info-box {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    color: #1e40af;
+    font-size: 14px;
+}
+
+/* Buttons */
+.settings-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.btn-save,
+.btn-test {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-save {
+    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+    color: white;
+    flex: 1;
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+}
+
+.btn-save:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(124, 58, 237, 0.4);
+}
+
+.btn-save:disabled {
+    background: #d1d5db;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.btn-test {
+    background: white;
+    border: 2px solid #7c3aed;
+    color: #7c3aed;
+}
+
+.btn-test:hover {
+    background: #7c3aed;
+    color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .settings-modal {
+        width: 98%;
+        max-width: none;
+    }
+
+    .settings-header,
+    .settings-tabs,
+    .settings-content {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .settings-tabs {
+        overflow-x: auto;
+    }
+}

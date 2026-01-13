@@ -37,10 +37,17 @@ export const AuthProvider = ({ children }) => {
     api.interceptors.response.use(
         (response) => response,
         (error) => {
-            if (error.response?.status === 401 || error.response?.status === 403) {
-                // Token geçersiz veya süresi dolmuş
-                logout();
+            // Sadece authenticated user için logout yap
+            // Login sayfasındaki hatalar için logout YAPMA!
+            const isLoginRequest = error.config?.url?.includes('/auth/login');
+
+            if (!isLoginRequest && (error.response?.status === 401 || error.response?.status === 403)) {
+                // Token geçersiz veya süresi dolmuş - sadece authenticated request'lerde
+                console.log('⚠️ Token geçersiz, logout yapılıyor...');
+                removeToken();
+                setUser(null);
             }
+
             return Promise.reject(error);
         }
     );
@@ -69,13 +76,13 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     /**
-     * Login işlemi
+     * Login işlemi - SESSIZCE backend'i kontrol eder, loading göstermez
      */
     const login = async (email, password) => {
-        try {
-            setError(null);
-            setLoading(true);
+        setError(null);
+        // setLoading YOK - Login sayfası kendi loading'ini yönetir
 
+        try {
             const response = await api.post('/auth/login', { email, password });
 
             if (response.data.success) {
@@ -88,14 +95,19 @@ export const AuthProvider = ({ children }) => {
                 setUser(user);
 
                 return { success: true, user };
+            } else {
+                // Backend success: false döndürdüyse
+                const errorMessage = response.data.message || 'Giriş başarısız';
+                setError(errorMessage);
+                return { success: false, error: errorMessage };
             }
         } catch (err) {
-            const errorMessage = err.response?.data?.message || 'Giriş başarısız';
+            // Network hatası veya backend hata response'u
+            const errorMessage = err.response?.data?.message || 'Bağlantı hatası. Backend çalışmıyor olabilir.';
             setError(errorMessage);
             return { success: false, error: errorMessage };
-        } finally {
-            setLoading(false);
         }
+        // finally bloğu YOK - setLoading yok
     };
 
     /**

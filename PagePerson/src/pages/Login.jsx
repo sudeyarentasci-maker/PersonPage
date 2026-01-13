@@ -3,7 +3,7 @@ import "./Login.css";
 import { useAuth } from "../auth/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-// İkonlar için basit SVG bileşenleri (Harici kütüphane gerektirmez)
+// İkonlar için basit SVG bileşenleri
 const MailIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></svg>
 );
@@ -23,23 +23,40 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrorMessage("");
-    setIsLoading(true);
+    e.stopPropagation();
 
+    setErrorMessage("");
+
+    // Input validation
+    if (!email.trim() || !password.trim()) {
+      setErrorMessage("Lütfen tüm alanları doldurunuz.");
+      return;
+    }
+
+    if (!email.includes('@')) {
+      setErrorMessage("Geçerli bir e-posta adresi giriniz.");
+      return;
+    }
+
+    // ÖNCE BACKEND'İ KONTROL ET - Loading gösterme!
     try {
       const result = await login(email, password);
 
-      if (result.success) {
+      if (result && result.success) {
+        // SADECE BAŞARILI OLUNCA Loading göster
+        setIsLoading(true);
+
         // Başarılı giriş - kullanıcının rolüne göre yönlendir
         const dashboardPath = getDashboardPath();
         navigate(dashboardPath);
       } else {
-        // Hata mesajı göster
-        setErrorMessage(result.error || "Giriş başarısız");
+        // HATA - Loading gösterme, sadece hata mesajı
+        setErrorMessage(result?.error || "Giriş başarısız");
+        setIsLoading(false);
       }
     } catch (error) {
+      console.error('Login error:', error);
       setErrorMessage("Bir hata oluştu. Lütfen tekrar deneyin.");
-    } finally {
       setIsLoading(false);
     }
   };
@@ -59,18 +76,11 @@ function Login() {
           <p className="subtitle">İnsan Kaynakları Yönetim Platformu</p>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} noValidate>
           {errorMessage && (
-            <div style={{
-              padding: '12px',
-              marginBottom: '20px',
-              backgroundColor: '#fee',
-              border: '1px solid #fcc',
-              borderRadius: '8px',
-              color: '#c33',
-              fontSize: '14px'
-            }}>
-              {errorMessage}
+            <div className="error-alert">
+              <span className="error-icon">⚠️</span>
+              <span>{errorMessage}</span>
             </div>
           )}
 
@@ -85,8 +95,8 @@ function Login() {
                 onChange={(e) => setEmail(e.target.value)}
                 onFocus={() => setFocusedInput('email')}
                 onBlur={() => setFocusedInput(null)}
+                disabled={isLoading}
               />
-
             </div>
           </div>
 
@@ -104,6 +114,7 @@ function Login() {
                 onChange={(e) => setPassword(e.target.value)}
                 onFocus={() => setFocusedInput('password')}
                 onBlur={() => setFocusedInput(null)}
+                disabled={isLoading}
               />
 
             </div>

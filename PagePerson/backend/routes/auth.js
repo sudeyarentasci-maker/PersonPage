@@ -24,9 +24,9 @@ router.post('/login', async (req, res) => {
         const user = await User.findByEmail(email);
 
         if (!user) {
-            return res.status(401).json({
+            return res.status(404).json({
                 success: false,
-                message: 'Email veya şifre hatalı.'
+                message: 'Böyle bir kullanıcı yok.'
             });
         }
 
@@ -46,7 +46,7 @@ router.post('/login', async (req, res) => {
             if (!isPasswordValid) {
                 return res.status(401).json({
                     success: false,
-                    message: 'Email veya şifre hatalı.'
+                    message: 'Şifreniz hatalı.'
                 });
             }
         } else {

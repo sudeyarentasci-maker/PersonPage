@@ -48,9 +48,45 @@ export async function deleteUser(userId) {
     return response.data;
 }
 
+/**
+ * Kullanıcı email'ini değiştir
+ */
+export async function updateUserEmail(userId, newEmail) {
+    const response = await api.put(`/users/${userId}/email`, { newEmail });
+    return response.data;
+}
+
+/**
+ * Kullanıcı şifresini değiştir
+ */
+export async function updateUserPassword(userId, newPassword) {
+    const response = await api.put(`/users/${userId}/password`, { newPassword });
+    return response.data;
+}
+
+/**
+ * Kullanıcı rollerini değiştir
+ */
+export async function updateUserRoles(userId, roleNames) {
+    const response = await api.put(`/users/${userId}/roles`, { roleNames });
+    return response.data;
+}
+
+/**
+ * Kullanıcı durumunu değiştir (active/inactive)
+ */
+export async function updateUserStatus(userId, status) {
+    const response = await api.put(`/users/${userId}/status`, { status });
+    return response.data;
+}
+
 export default {
     createUser,
     getAllUsers,
     getUserById,
-    deleteUser
+    deleteUser,
+    updateUserEmail,
+    updateUserPassword,
+    updateUserRoles,
+    updateUserStatus
 };

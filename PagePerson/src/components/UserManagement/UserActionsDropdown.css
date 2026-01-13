@@ -1,0 +1,85 @@
+/* User Actions Dropdown */
+.user-actions-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-trigger {
+    background: none;
+    border: none;
+    font-size: 24px;
+    font-weight: bold;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: all 0.2s;
+    line-height: 1;
+}
+
+.dropdown-trigger:hover {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.dropdown-menu {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    margin-top: 4px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    min-width: 200px;
+    z-index: 1000;
+    padding: 6px;
+    animation: dropdownSlide 0.2s ease-out;
+}
+
+@keyframes dropdownSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdown-item {
+    width: 100%;
+    text-align: left;
+    padding: 10px 14px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: #374151;
+    border-radius: 6px;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dropdown-item:hover {
+    background: #f3f4f6;
+    color: #111827;
+}
+
+.dropdown-item.delete {
+    color: #dc2626;
+}
+
+.dropdown-item.delete:hover {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.dropdown-divider {
+    height: 1px;
+    background: #e5e7eb;
+    margin: 6px 0;
+}
