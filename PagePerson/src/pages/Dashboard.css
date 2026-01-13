@@ -17,8 +17,9 @@
 }
 
 .header-content {
-    max-width: 1400px;
+    /* max-width: 1400px; KALDIRILDI - scrollbar sağda olsun */
     margin: 0 auto;
+    padding: 0 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -88,9 +89,9 @@
 
 /* Dashboard Content - COMPACT & SCROLLABLE */
 .dashboard-content {
-    max-width: 1400px;
+    /* max-width: 1400px; KALDIRILDI - scrollbar sağda olsun */
     margin: 0 auto;
-    padding: 20px;
+    padding: 20px 40px;
     max-height: calc(100vh - 70px);
     overflow-y: auto;
 }

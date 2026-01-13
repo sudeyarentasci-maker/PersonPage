@@ -3,6 +3,7 @@ import './UserActionsDropdown.css';
 
 function UserActionsDropdown({ user, onAction }) {
     const [isOpen, setIsOpen] = useState(false);
+    const [openUpwards, setOpenUpwards] = useState(false);
     const dropdownRef = useRef(null);
 
     useEffect(() => {
@@ -16,6 +17,16 @@ function UserActionsDropdown({ user, onAction }) {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    const handleToggle = () => {
+        if (!isOpen && dropdownRef.current) {
+            const rect = dropdownRef.current.getBoundingClientRect();
+            const spaceBelow = window.innerHeight - rect.bottom;
+            // Eğer aşağıda 220px'den az yer varsa yukarı doğru aç
+            setOpenUpwards(spaceBelow < 220);
+        }
+        setIsOpen(!isOpen);
+    };
+
     const handleAction = (action) => {
         setIsOpen(false);
         onAction(action, user);
@@ -27,14 +38,14 @@ function UserActionsDropdown({ user, onAction }) {
         <div className="user-actions-dropdown" ref={dropdownRef}>
             <button
                 className="dropdown-trigger"
-                onClick={() => setIsOpen(!isOpen)}
+                onClick={handleToggle}
                 title="İşlemler"
             >
                 ⋮
             </button>
 
             {isOpen && (
-                <div className="dropdown-menu">
+                <div className={`dropdown-menu ${openUpwards ? 'upwards' : ''}`}>
                     <button
                         className="dropdown-item"
                         onClick={() => handleAction('email')}

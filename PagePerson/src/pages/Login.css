@@ -195,6 +195,12 @@ body {
   /* Explicitly align left */
 }
 
+.forgot-password-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
 .forgot-password {
   font-size: 0.75rem;
   color: #4f46e5;

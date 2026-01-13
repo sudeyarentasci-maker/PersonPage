@@ -162,7 +162,8 @@ router.get('/pending', authenticateToken, authorizeRoles('MANAGER', 'HR', 'SYSTE
 
             return {
                 ...leave,
-                userName: user?.email || 'Unknown'
+                userName: user?.email || 'Unknown',
+                remainingDays: 20 - (await Leave.getTotalLeaveDays(leave.userId, new Date().getFullYear())) // Yıllık izin 20 gün varsayıldı
             };
         }));
 

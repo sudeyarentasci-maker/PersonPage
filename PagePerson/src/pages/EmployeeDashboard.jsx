@@ -163,7 +163,12 @@ function EmployeeDashboard() {
                     <div className="feature-card">
                         <h3>📋 İzin Geçmişim</h3>
                         <p>Geçmiş izin taleplerinizi görüntüleyin</p>
-                        <button className="feature-btn">Geçmişi Gör (Aşağıda)</button>
+                        <button
+                            className="feature-btn"
+                            onClick={() => document.getElementById('leave-history-section').scrollIntoView({ behavior: 'smooth' })}
+                        >
+                            Geçmişi Gör
+                        </button>
                     </div>
 
                     <div className="feature-card">
@@ -183,7 +188,7 @@ function EmployeeDashboard() {
                 <AnnouncementList />
 
                 {/* İzin Listesi */}
-                <div className="leave-list-section">
+                <div id="leave-history-section" className="leave-list-section">
                     <h3>📋 İzin Geçmişim ({leaves.length})</h3>
                     {leaves.length === 0 ? (
                         <p className="empty-state">Henüz izin talebiniz yok.</p>

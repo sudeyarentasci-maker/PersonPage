@@ -112,16 +112,7 @@ function AdminDashboard() {
                         </button>
                     </div>
 
-                    <div className="feature-card">
-                        <h3>🎭 Rol Yönetimi</h3>
-                        <p>Rolleri tanımla ve yetkileri düzenle</p>
-                        <button
-                            className="feature-btn"
-                            onClick={() => handleSectionClick('roles')}
-                        >
-                            Yönet (Yakında)
-                        </button>
-                    </div>
+
 
                     <div className="feature-card">
                         <h3>⚙️ Sistem Ayarları</h3>
@@ -130,7 +121,7 @@ function AdminDashboard() {
                             className="feature-btn"
                             onClick={() => handleSectionClick('settings')}
                         >
-                            Ayarlar (Yakında)
+                            ⚙️ Sistem Ayarları
                         </button>
                     </div>
 

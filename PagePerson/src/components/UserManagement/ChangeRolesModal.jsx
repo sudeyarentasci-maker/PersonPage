@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { updateUserRoles } from '../../services/userService';
 import '../UserManagement/UserManagement.css';
 
@@ -58,7 +59,7 @@ function ChangeRolesModal({ isOpen, onClose, user, onSuccess }) {
 
     if (!isOpen) return null;
 
-    return (
+    return ReactDOM.createPortal(
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
@@ -117,7 +118,8 @@ function ChangeRolesModal({ isOpen, onClose, user, onSuccess }) {
                     </div>
                 </form>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }
 

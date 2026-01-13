@@ -154,7 +154,8 @@ function ManagerDashboard() {
                 </div>
 
                 {/* Bekleyen İzin Talepleri */}
-                <div className="leave-list-section">
+                {/* Bekleyen İzin Talepleri */}
+                <div className="leave-list-section" style={{ marginBottom: '25px' }}>
                     <h3>⏳ Onay Bekleyen İzinler ({pendingLeaves.length})</h3>
                     {pendingLeaves.length === 0 ? (
                         <p className="empty-state">Bekleyen izin talebi yok.</p>
@@ -171,6 +172,7 @@ function ManagerDashboard() {
                                     <div className="leave-card-body">
                                         <p><strong>📅 Tarih:</strong> {new Date(leave.startDate).toLocaleDateString('tr-TR')} - {new Date(leave.endDate).toLocaleDateString('tr-TR')}</p>
                                         <p><strong>⏱️ Gün:</strong> {leave.days} gün</p>
+                                        <p><strong>🎯 Kalan İzin:</strong> {leave.remainingDays !== undefined ? `${leave.remainingDays} gün` : '...'}</p>
                                         <p><strong>📝 Sebep:</strong> {leave.reason}</p>
                                     </div>
                                     <div className="leave-card-actions">
@@ -256,6 +258,7 @@ function ManagerDashboard() {
                             <p><strong>Çalışan:</strong> {selectedLeave.userName}</p>
                             <p><strong>Tarih:</strong> {new Date(selectedLeave.startDate).toLocaleDateString('tr-TR')} - {new Date(selectedLeave.endDate).toLocaleDateString('tr-TR')}</p>
                             <p><strong>Gün:</strong> {selectedLeave.days} gün</p>
+                            <p><strong>Kalan İzin:</strong> {selectedLeave.remainingDays !== undefined ? `${selectedLeave.remainingDays} gün` : '...'}</p>
                             <p><strong>Sebep:</strong> {selectedLeave.reason}</p>
                         </div>
 

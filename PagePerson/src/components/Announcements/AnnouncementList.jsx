@@ -23,7 +23,14 @@ function AnnouncementList() {
         try {
             const result = await getAnnouncements();
             if (result.success) {
-                setAnnouncements(result.data.announcements);
+                const sortedAnnouncements = result.data.announcements.sort((a, b) => {
+                    const priorityOrder = { 'HIGH': 3, 'NORMAL': 2, 'LOW': 1 };
+                    const priorityDiff = priorityOrder[b.priority] - priorityOrder[a.priority];
+
+                    if (priorityDiff !== 0) return priorityDiff;
+                    return new Date(b.createdAt) - new Date(a.createdAt);
+                });
+                setAnnouncements(sortedAnnouncements);
             }
         } catch (err) {
             console.error('Duyurular yüklenemedi:', err);
@@ -134,7 +141,8 @@ function AnnouncementList() {
                                         👤 {announcement.creatorEmail}
                                     </span>
                                     <span className="announcement-date">
-                                        🕒 {formatDate(announcement.createdAt)}
+                                        {announcement.expiresAt ? '⏳ ' : '🕒 '}
+                                        {formatDate(announcement.expiresAt || announcement.createdAt)}
                                     </span>
                                 </div>
                             </div>

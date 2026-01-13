@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { updateAnnouncement } from '../../services/announcementService';
 import '../UserManagement/UserManagement.css';
+import './EditAnnouncementModal.css';
 
 function EditAnnouncementModal({ isOpen, onClose, announcement, onAnnouncementUpdated }) {
     const [formData, setFormData] = useState({
@@ -22,7 +23,7 @@ function EditAnnouncementModal({ isOpen, onClose, announcement, onAnnouncementUp
                 priority: announcement.priority || 'NORMAL',
                 targetRoles: announcement.targetRoles || [],
                 expiresAt: announcement.expiresAt
-                    ? new Date(announcement.expiresAt).toISOString().split('T')[0]
+                    ? new Date(new Date(announcement.expiresAt).getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().slice(0, 16)
                     : ''
             });
         }
@@ -36,7 +37,7 @@ function EditAnnouncementModal({ isOpen, onClose, announcement, onAnnouncementUp
         try {
             const result = await updateAnnouncement(announcement.announcementId, formData);
             if (result.success) {
-                alert('✅ Duyuru güncellendi!');
+                // alert('✅ Duyuru güncellendi!'); // Alert yerine UI feedback daha iyi olabilir ama şimdilik kalsın veya kaldıralım
                 onClose();
 
                 if (onAnnouncementUpdated) {
@@ -67,7 +68,7 @@ function EditAnnouncementModal({ isOpen, onClose, announcement, onAnnouncementUp
     if (!isOpen) return null;
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
+        <div className="modal-overlay edit-announcement-modal" onClick={onClose}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 {/* Header */}
                 <div className="modal-header">
@@ -105,33 +106,16 @@ function EditAnnouncementModal({ isOpen, onClose, announcement, onAnnouncementUp
                             rows="6"
                             required
                             disabled={isLoading}
-                            style={{
-                                width: '100%',
-                                padding: '10px 14px',
-                                border: '2px solid #e0e0e0',
-                                borderRadius: '8px',
-                                fontSize: '14px',
-                                fontFamily: 'inherit',
-                                resize: 'vertical',
-                                minHeight: '120px'
-                            }}
                         />
                     </div>
 
-                    <div className="form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                    <div className="form-row">
                         <div className="form-group">
                             <label>Öncelik</label>
                             <select
                                 value={formData.priority}
                                 onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
                                 disabled={isLoading}
-                                style={{
-                                    width: '100%',
-                                    padding: '10px 14px',
-                                    border: '2px solid #e0e0e0',
-                                    borderRadius: '8px',
-                                    fontSize: '14px'
-                                }}
                             >
                                 <option value="LOW">⚪ Düşük</option>
                                 <option value="NORMAL">🔵 Normal</option>
@@ -142,10 +126,10 @@ function EditAnnouncementModal({ isOpen, onClose, announcement, onAnnouncementUp
                         <div className="form-group">
                             <label>Son Geçerlilik (Opsiyonel)</label>
                             <input
-                                type="date"
+                                type="datetime-local"
                                 value={formData.expiresAt}
                                 onChange={(e) => setFormData({ ...formData, expiresAt: e.target.value })}
-                                min={new Date().toISOString().split('T')[0]}
+                                min={new Date().toISOString().slice(0, 16)}
                                 disabled={isLoading}
                             />
                         </div>
@@ -207,9 +191,6 @@ function EditAnnouncementModal({ isOpen, onClose, announcement, onAnnouncementUp
                             type="submit"
                             className="btn-primary"
                             disabled={isLoading || formData.targetRoles.length === 0}
-                            style={{
-                                background: isLoading ? '#ccc' : 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
-                            }}
                         >
                             {isLoading ? 'Güncelleniyor...' : '✏️ Duyuruyu Güncelle'}
                         </button>

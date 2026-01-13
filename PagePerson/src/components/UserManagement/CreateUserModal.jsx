@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
 import { createUser } from '../../services/userService';
 import './UserManagement.css';
 
@@ -70,7 +71,7 @@ function CreateUserModal({ isOpen, onClose, onUserCreated }) {
 
     if (!isOpen) return null;
 
-    return (
+    return ReactDOM.createPortal(
         <div className="modal-overlay" onClick={handleClose}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
@@ -169,7 +170,7 @@ function CreateUserModal({ isOpen, onClose, onUserCreated }) {
                 )}
             </div>
         </div>
-    );
+        , document.body);
 }
 
 export default CreateUserModal;

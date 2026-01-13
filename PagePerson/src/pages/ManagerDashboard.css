@@ -94,12 +94,55 @@
     padding: 15px;
     border-radius: 8px;
     margin-bottom: 15px;
+    border: 1px solid #eee;
 }
 
 .leave-detail p {
     margin: 8px 0;
     font-size: 14px;
     color: #555;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px dashed #eee;
+    padding-bottom: 5px;
+}
+
+.leave-detail p:last-child {
+    border-bottom: none;
+}
+
+/* Modal Form Styles */
+.modal-content textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #f9fafb;
+    font-family: inherit;
+    font-size: 14px;
+    color: #374151;
+    transition: all 0.2s;
+    resize: vertical;
+    min-height: 80px;
+}
+
+.modal-content textarea:focus {
+    outline: none;
+    background: white;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.modal-content label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #374151;
+    font-size: 14px;
+}
+
+.form-group {
+    margin-bottom: 20px;
 }
 
 @media (max-width: 768px) {

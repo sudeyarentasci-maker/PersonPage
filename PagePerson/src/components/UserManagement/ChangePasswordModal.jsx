@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
 import { updateUserPassword } from '../../services/userService';
 import '../UserManagement/UserManagement.css';
 
@@ -42,7 +43,7 @@ function ChangePasswordModal({ isOpen, onClose, user, onSuccess }) {
 
     if (!isOpen) return null;
 
-    return (
+    return ReactDOM.createPortal(
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
@@ -109,7 +110,8 @@ function ChangePasswordModal({ isOpen, onClose, user, onSuccess }) {
                     </div>
                 </form>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }
 

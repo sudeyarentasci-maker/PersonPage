@@ -103,7 +103,6 @@ function Login() {
           <div className={`field ${focusedInput === 'password' ? 'active' : ''}`}>
             <div className="label-row">
               <label>Şifre</label>
-              <a href="#" className="forgot-password">Şifremi unuttum?</a>
             </div>
             <div className="input-group">
               <span className="input-icon"><LockIcon /></span>
@@ -116,7 +115,9 @@ function Login() {
                 onBlur={() => setFocusedInput(null)}
                 disabled={isLoading}
               />
-
+            </div>
+            <div className="forgot-password-container">
+              <a href="#" className="forgot-password">Şifremi unuttum?</a>
             </div>
           </div>
 

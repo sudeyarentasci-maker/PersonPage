@@ -24,6 +24,8 @@
     flex-direction: column;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
     animation: slideUp 0.3s ease-out;
+    overflow: hidden;
+    /* Dış taşmayı önle */
 }
 
 @keyframes slideUp {
@@ -73,14 +75,21 @@
 .settings-tabs {
     display: flex;
     gap: 8px;
-    padding: 16px 28px;
+    padding: 16px 0;
+    /* Üst/alt padding */
+    min-height: 76.8px;
+    /* SABİT YÜKSEKLIK - scrollbar'dan etkilenmesin */
+    justify-content: center;
+    /* Tab'ları merkeze al */
     background: #f9fafb;
     border-bottom: 1px solid #e5e7eb;
     overflow-x: auto;
 }
 
 .tab-btn {
-    padding: 10px 20px;
+    padding: 12px 24px;
+    min-width: 140px;
+    /* Tab uzunluğu sabit */
     border: none;
     background: transparent;
     color: #6b7280;
@@ -90,6 +99,8 @@
     border-radius: 8px;
     transition: all 0.2s;
     white-space: nowrap;
+    text-align: center;
+    /* Text ortalanmış */
 }
 
 .tab-btn:hover {
@@ -141,6 +152,8 @@
     flex: 1;
     padding: 24px 28px;
     overflow-y: auto;
+    scrollbar-gutter: stable;
+    /* Scrollbar için yer ayır - tab kaymasını önler */
 }
 
 .settings-section {
@@ -161,7 +174,7 @@
 }
 
 .form-group label {
-    display: block;
+    display: flex;
     font-weight: 600;
     color: #4b5563;
     font-size: 14px;
@@ -198,10 +211,13 @@
 .checkbox-container {
     display: flex;
     align-items: center;
+    /* Dikey hizalama */
     gap: 10px;
     cursor: pointer;
     user-select: none;
-    padding: 12px;
+    padding: 14px;
+    margin-bottom: 12px;
+    /* Checkbox'lar arası boşluk */
     background: #f9fafb;
     border-radius: 8px;
     transition: all 0.2s;
@@ -216,12 +232,20 @@
     height: 20px;
     cursor: pointer;
     accent-color: #7c3aed;
+    flex-shrink: 0;
+    /* Checkbox boyutu sabit */
+    margin: 0;
+    /* Default margin kaldır */
+    vertical-align: middle;
+    /* Text ile hizala */
 }
 
 .checkbox-container span {
     font-size: 14px;
     font-weight: 500;
     color: #374151;
+    line-height: 20px;
+    /* Checkbox yüksekliğiyle aynı */
 }
 
 /* Info Box */

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
 import { createAnnouncement } from '../../services/announcementService';
-import '../UserManagement/UserManagement.css'; // Basit beyaz modal stili
+import '../UserManagement/UserManagement.css'; // Base styles
+import './CreateAnnouncementModal.css'; // Custom professional styles
 
 function CreateAnnouncementModal({ isOpen, onClose, onAnnouncementCreated }) {
     const [formData, setFormData] = useState({
@@ -63,8 +65,8 @@ function CreateAnnouncementModal({ isOpen, onClose, onAnnouncementCreated }) {
 
     if (!isOpen) return null;
 
-    return (
-        <div className="modal-overlay" onClick={handleClose}>
+    return ReactDOM.createPortal(
+        <div className="modal-overlay create-announcement-modal" onClick={handleClose}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 {/* Header */}
                 <div className="modal-header">
@@ -102,20 +104,10 @@ function CreateAnnouncementModal({ isOpen, onClose, onAnnouncementCreated }) {
                             rows="5"
                             required
                             disabled={isLoading}
-                            style={{
-                                width: '100%',
-                                padding: '10px 14px',
-                                border: '2px solid #e0e0e0',
-                                borderRadius: '8px',
-                                fontSize: '15px',
-                                fontFamily: 'inherit',
-                                resize: 'vertical',
-                                minHeight: '120px'
-                            }}
                         />
                     </div>
 
-                    <div className="form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                    <div className="form-row">
                         <div className="form-group">
                             <label>Öncelik</label>
                             <select
@@ -132,10 +124,10 @@ function CreateAnnouncementModal({ isOpen, onClose, onAnnouncementCreated }) {
                         <div className="form-group">
                             <label>Son Geçerlilik (Opsiyonel)</label>
                             <input
-                                type="date"
+                                type="datetime-local"
                                 value={formData.expiresAt}
                                 onChange={(e) => setFormData({ ...formData, expiresAt: e.target.value })}
-                                min={new Date().toISOString().split('T')[0]}
+                                min={new Date().toISOString().slice(0, 16)}
                                 disabled={isLoading}
                             />
                         </div>
@@ -203,7 +195,8 @@ function CreateAnnouncementModal({ isOpen, onClose, onAnnouncementCreated }) {
                     </div>
                 </form>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }
 
