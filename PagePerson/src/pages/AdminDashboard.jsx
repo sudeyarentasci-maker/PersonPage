@@ -1,9 +1,49 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../auth/AuthContext';
+import CreateUserModal from '../components/UserManagement/CreateUserModal';
+import UserList from '../components/UserManagement/UserList';
+import AnnouncementList from '../components/Announcements/AnnouncementList';
+import { getAllLeaves } from '../services/leaveService';
 import './Dashboard.css';
+import './LeaveDashboard.css';
 
 function AdminDashboard() {
     const { user, logout } = useAuth();
+    const [isUserModalOpen, setIsUserModalOpen] = useState(false);
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
+    const [allLeaves, setAllLeaves] = useState([]);
+
+    useEffect(() => {
+        fetchAllLeaves();
+    }, []);
+
+    const fetchAllLeaves = async () => {
+        try {
+            const result = await getAllLeaves();
+            if (result.success) {
+                setAllLeaves(result.data.leaves);
+            }
+        } catch (err) {
+            console.error('İzinler yüklenemedi:', err);
+        }
+    };
+
+    const handleUserCreated = (userData) => {
+        console.log('Yeni kullanıcı oluşturuldu:', userData);
+        setRefreshTrigger(prev => prev + 1);
+    };
+
+    const handleSectionClick = (section) => {
+        if (section === 'users') {
+            setIsUserModalOpen(true);
+        } else if (section === 'roles') {
+            alert('🎭 Rol Yönetimi\n\nBu özellik yakında eklenecek!\n\n- Rol oluşturma\n- Yetki atama\n- Rol düzenleme');
+        } else if (section === 'settings') {
+            alert('⚙️ Sistem Ayarları\n\nYapılandırma Seçenekleri:\n\n- Genel ayarlar\n- Güvenlik politikaları\n- Email ayarları\n- Yedekleme ayarları');
+        } else if (section === 'logs') {
+            alert('📜 Sistem Logları\n\nLog Görüntüleme:\n\n- Kullanıcı aktiviteleri\n- Sistem hataları\n- Güvenlik olayları\n- API istekleri\n\nGerçek log sistemi yakında eklenecek!');
+        }
+    };
 
     return (
         <div className="dashboard-wrapper">
@@ -29,7 +69,7 @@ function AdminDashboard() {
                         <div className="stat-icon">👥</div>
                         <div className="stat-info">
                             <h3>Toplam Kullanıcı</h3>
-                            <p className="stat-number">1</p>
+                            <p className="stat-number">5</p>
                         </div>
                     </div>
 
@@ -42,10 +82,10 @@ function AdminDashboard() {
                     </div>
 
                     <div className="stat-card">
-                        <div className="stat-icon">🔐</div>
+                        <div className="stat-icon">📝</div>
                         <div className="stat-info">
-                            <h3>Aktif Oturum</h3>
-                            <p className="stat-number">1</p>
+                            <h3>Toplam İzin</h3>
+                            <p className="stat-number">{allLeaves.length}</p>
                         </div>
                     </div>
 
@@ -61,29 +101,62 @@ function AdminDashboard() {
                 <div className="features-grid">
                     <div className="feature-card">
                         <h3>👤 Kullanıcı Yönetimi</h3>
-                        <p>Kullanıcıları ekle, düzenle ve sil</p>
-                        <button className="feature-btn">Yönet</button>
+                        <p>HR dahil tüm kullanıcıları yönet</p>
+                        <button
+                            className="feature-btn"
+                            onClick={() => handleSectionClick('users')}
+                        >
+                            👤 Kullanıcıları Yönet
+                        </button>
                     </div>
 
                     <div className="feature-card">
                         <h3>🎭 Rol Yönetimi</h3>
                         <p>Rolleri tanımla ve yetkileri düzenle</p>
-                        <button className="feature-btn">Yönet</button>
+                        <button
+                            className="feature-btn"
+                            onClick={() => handleSectionClick('roles')}
+                        >
+                            Yönet (Yakında)
+                        </button>
                     </div>
 
                     <div className="feature-card">
                         <h3>⚙️ Sistem Ayarları</h3>
                         <p>Genel sistem yapılandırması</p>
-                        <button className="feature-btn">Ayarlar</button>
+                        <button
+                            className="feature-btn"
+                            onClick={() => handleSectionClick('settings')}
+                        >
+                            Ayarlar (Yakında)
+                        </button>
                     </div>
 
                     <div className="feature-card">
                         <h3>📜 Sistem Logları</h3>
                         <p>Sistem aktivitelerini ve logları görüntüle</p>
-                        <button className="feature-btn">Loglar</button>
+                        <button
+                            className="feature-btn"
+                            onClick={() => handleSectionClick('logs')}
+                        >
+                            Loglar (Yakında)
+                        </button>
                     </div>
                 </div>
+
+                {/* Duyurular */}
+                <AnnouncementList />
+
+                {/* Kullanıcı Listesi */}
+                <UserList refreshTrigger={refreshTrigger} />
             </div>
+
+            {/* Kullanıcı Oluşturma Modal */}
+            <CreateUserModal
+                isOpen={isUserModalOpen}
+                onClose={() => setIsUserModalOpen(false)}
+                onUserCreated={handleUserCreated}
+            />
         </div>
     );
 }

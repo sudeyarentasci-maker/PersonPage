@@ -1,0 +1,55 @@
+/* HR Dashboard Specific Styles */
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.filter-btn {
+    padding: 8px 16px;
+    border: 2px solid #e0e0e0;
+    background: white;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #666;
+}
+
+.filter-btn:hover {
+    border-color: #667eea;
+    background: #f9f9ff;
+}
+
+.filter-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: #667eea;
+}
+
+@media (max-width: 768px) {
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .filter-buttons {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .filter-btn {
+        flex: 1;
+        min-width: 100px;
+    }
+}

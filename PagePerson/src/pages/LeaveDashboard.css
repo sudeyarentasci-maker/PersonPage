@@ -1,0 +1,160 @@
+/* Leave Dashboard Specific Styles */
+
+.leave-list-section {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-top: 20px;
+}
+
+.leave-list-section h3 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 18px;
+}
+
+.leave-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.leave-table thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.leave-table th {
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.leave-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+}
+
+.leave-table tbody tr:hover {
+    background: #f9f9f9;
+}
+
+.leave-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.reason-cell,
+.comment-cell {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+    font-size: 14px;
+}
+
+/* Status Badges */
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.status-pending {
+    background: #fff4e6;
+    color: #d97706;
+    border: 1px solid #fbbf24;
+}
+
+.status-approved {
+    background: #dcfce7;
+    color: #16a34a;
+    border: 1px solid #86efac;
+}
+
+.status-rejected {
+    background: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fca5a5;
+}
+
+/* Leave Form */
+.leave-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.leave-form .form-group label {
+    display: block;
+    font-weight: 600;
+    color: #555;
+    font-size: 13px;
+    margin-bottom: 7px;
+}
+
+.leave-form input[type="date"],
+.leave-form select,
+.leave-form textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: border 0.2s;
+}
+
+.leave-form input:focus,
+.leave-form select:focus,
+.leave-form textarea:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.leave-form textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .leave-table {
+        font-size: 12px;
+    }
+
+    .leave-table th,
+    .leave-table td {
+        padding: 8px;
+    }
+
+    .reason-cell,
+    .comment-cell {
+        max-width: 120px;
+    }
+}

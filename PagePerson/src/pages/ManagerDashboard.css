@@ -1,0 +1,113 @@
+/* Manager Dashboard Specific Styles */
+
+.pending-leaves-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.leave-approval-card {
+    background: white;
+    border-radius: 10px;
+    padding: 18px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border-left: 4px solid #fbbf24;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.leave-approval-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.leave-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.leave-card-header h4 {
+    margin: 0;
+    font-size: 16px;
+    color: #333;
+}
+
+.leave-type-badge {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.leave-card-body p {
+    margin: 8px 0;
+    font-size: 13px;
+    color: #666;
+}
+
+.leave-card-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.btn-approve,
+.btn-reject {
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-approve {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+}
+
+.btn-approve:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-reject {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+}
+
+.btn-reject:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.leave-detail {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.leave-detail p {
+    margin: 8px 0;
+    font-size: 14px;
+    color: #555;
+}
+
+@media (max-width: 768px) {
+    .pending-leaves-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .leave-card-actions {
+        grid-template-columns: 1fr;
+    }
+}

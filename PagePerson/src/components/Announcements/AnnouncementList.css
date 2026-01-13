@@ -1,0 +1,125 @@
+/* Announcements Styles */
+
+.announcements-section {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-top: 20px;
+}
+
+.announcements-section h3 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 18px;
+}
+
+.loading-text,
+.empty-announcements {
+    text-align: center;
+    padding: 30px;
+    color: #999;
+    font-size: 14px;
+}
+
+.announcements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 15px;
+}
+
+.announcement-card {
+    background: white;
+    border-radius: 10px;
+    padding: 18px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    border-left: 4px solid #667eea;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.announcement-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.announcement-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    gap: 10px;
+}
+
+.announcement-header h4 {
+    margin: 0;
+    font-size: 16px;
+    color: #333;
+    flex: 1;
+}
+
+.priority-badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.priority-high {
+    background: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fca5a5;
+}
+
+.priority-normal {
+    background: #e0e7ff;
+    color: #4f46e5;
+    border: 1px solid #a5b4fc;
+}
+
+.priority-low {
+    background: #f3f4f6;
+    color: #6b7280;
+    border: 1px solid #d1d5db;
+}
+
+.announcement-body {
+    margin-bottom: 12px;
+}
+
+.announcement-body p {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+    line-height: 1.6;
+}
+
+.announcement-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    border-top: 1px solid #f0f0f0;
+    font-size: 12px;
+    color: #888;
+}
+
+.announcement-author,
+.announcement-date {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+@media (max-width: 768px) {
+    .announcements-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .announcement-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+}
