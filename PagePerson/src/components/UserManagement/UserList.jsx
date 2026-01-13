@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { getAllUsers, deleteUser } from '../../services/userService';
+import { useAuth } from '../../auth/AuthContext';
 import './UserManagement.css';
 
 function UserList({ refreshTrigger }) {
+    const { user } = useAuth();
     const [users, setUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
+
+    // Kullanıcının SYSTEM_ADMIN olup olmadığını kontrol et
+    const isSystemAdmin = user?.roles?.includes('SYSTEM_ADMIN');
 
     const fetchUsers = async () => {
         setIsLoading(true);
@@ -76,7 +81,7 @@ function UserList({ refreshTrigger }) {
                             <th>Email</th>
                             <th>Roller</th>
                             <th>Durum</th>
-                            <th>İşlemler</th>
+                            {isSystemAdmin && <th>İşlemler</th>}
                         </tr>
                     </thead>
                     <tbody>
@@ -98,15 +103,17 @@ function UserList({ refreshTrigger }) {
                                         {user.status}
                                     </span>
                                 </td>
-                                <td>
-                                    <button
-                                        className="delete-btn"
-                                        onClick={() => handleDelete(user.userId, user.email)}
-                                        title="Kullanıcıyı Sil"
-                                    >
-                                        🗑️
-                                    </button>
-                                </td>
+                                {isSystemAdmin && (
+                                    <td>
+                                        <button
+                                            className="delete-btn"
+                                            onClick={() => handleDelete(user.userId, user.email)}
+                                            title="Kullanıcıyı Sil"
+                                        >
+                                            🗑️
+                                        </button>
+                                    </td>
+                                )}
                             </tr>
                         ))}
                     </tbody>

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../auth/AuthContext';
-import CreateUserModal from '../components/UserManagement/CreateUserModal';
 import UserList from '../components/UserManagement/UserList';
 import AnnouncementManagement from '../components/Announcements/AnnouncementManagement';
 import AnnouncementList from '../components/Announcements/AnnouncementList';
@@ -11,7 +10,6 @@ import './HrDashboard.css';
 
 function HrDashboard() {
     const { user, logout } = useAuth();
-    const [isUserModalOpen, setIsUserModalOpen] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
     const [allLeaves, setAllLeaves] = useState([]);
     const [leaveFilter, setLeaveFilter] = useState('ALL'); // ALL, PENDING, APPROVED, REJECTED
@@ -31,11 +29,6 @@ function HrDashboard() {
         } catch (err) {
             console.error('İzinler yüklenemedi:', err);
         }
-    };
-
-    const handleUserCreated = (userData) => {
-        console.log('Yeni kullanıcı oluşturuldu:', userData);
-        setRefreshTrigger(prev => prev + 1);
     };
 
     const handleAnnouncementCreated = () => {
@@ -123,17 +116,6 @@ function HrDashboard() {
                 </div>
 
                 <div className="features-grid">
-                    <div className="feature-card">
-                        <h3>🧑‍💼 Kullanıcı Yönetimi</h3>
-                        <p>Yeni kullanıcılar oluştur ve mevcut kullanıcıları yönet</p>
-                        <button
-                            className="feature-btn"
-                            onClick={() => setIsUserModalOpen(true)}
-                        >
-                            👤 Yeni Kullanıcı Oluştur
-                        </button>
-                    </div>
-
                     <div className="feature-card">
                         <h3>📋 İzin Yönetimi</h3>
                         <p>Tüm şirket izinlerini görüntüle ve yönet</p>
@@ -237,13 +219,6 @@ function HrDashboard() {
                     )}
                 </div>
             </div>
-
-            {/* Kullanıcı Oluşturma Modal */}
-            <CreateUserModal
-                isOpen={isUserModalOpen}
-                onClose={() => setIsUserModalOpen(false)}
-                onUserCreated={handleUserCreated}
-            />
         </div>
     );
 }

@@ -9,9 +9,9 @@ const router = express.Router();
 
 /**
  * POST /api/users
- * Yeni kullanıcı oluştur (Sadece HR ve SYSTEM_ADMIN)
+ * Yeni kullanıcı oluştur (SADECE SYSTEM_ADMIN)
  */
-router.post('/', authenticateToken, authorizeRoles('HR', 'SYSTEM_ADMIN'), async (req, res) => {
+router.post('/', authenticateToken, authorizeRoles('SYSTEM_ADMIN'), async (req, res) => {
     try {
         const { email, roleNames } = req.body;
 
@@ -175,7 +175,7 @@ router.get('/:userId', authenticateToken, authorizeRoles('HR', 'SYSTEM_ADMIN'), 
 
 /**
  * DELETE /api/users/:userId
- * Kullanıcı sil (Sadece SYSTEM_ADMIN)
+ * Kullanıcıyı tamamen sil (SADECE SYSTEM_ADMIN)
  */
 router.delete('/:userId', authenticateToken, authorizeRoles('SYSTEM_ADMIN'), async (req, res) => {
     try {
@@ -191,26 +191,36 @@ router.delete('/:userId', authenticateToken, authorizeRoles('SYSTEM_ADMIN'), asy
 
         const db = getDatabase();
 
-        // Kullanıcıyı sil
-        const result = await db.collection('users').deleteOne({ userId });
-
-        if (result.deletedCount === 0) {
+        // Kullanıcı var mı kontrol et
+        const user = await db.collection('users').findOne({ userId });
+        if (!user) {
             return res.status(404).json({
                 success: false,
                 message: 'Kullanıcı bulunamadı.'
             });
         }
 
-        // İlişkili rolleri de sil
+        // 1. user_roles silme
         await db.collection('user_roles').deleteMany({ userId });
+
+        // 2. employee_manager ilişkilerini silme (hem employee hem manager olarak)
+        await db.collection('employee_manager').deleteMany({
+            $or: [
+                { employeeId: userId },
+                { managerId: userId }
+            ]
+        });
+
+        // 3. Kullanıcıyı database'den tamamen sil
+        await db.collection('users').deleteOne({ userId });
 
         res.json({
             success: true,
-            message: 'Kullanıcı başarıyla silindi.'
+            message: 'Kullanıcı kalıcı olarak silindi.'
         });
 
     } catch (error) {
-        console.error('Kullanıcı silme hatası:', error);
+        console.error('Kullanıcıyı silme hatası:', error);
         res.status(500).json({
             success: false,
             message: 'Kullanıcı silinemedi.'
