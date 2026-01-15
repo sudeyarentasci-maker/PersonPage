@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { createLeaveRequest, getMyLeaves, getLeaveStats } from '../services/leaveService';
 import AnnouncementList from '../components/Announcements/AnnouncementList';
@@ -6,6 +7,7 @@ import './Dashboard.css';
 import './LeaveDashboard.css';
 
 function EmployeeDashboard() {
+    const navigate = useNavigate();
     const { user, logout } = useAuth();
     const [leaves, setLeaves] = useState([]);
     const [stats, setStats] = useState(null);
@@ -101,6 +103,7 @@ function EmployeeDashboard() {
                     <div className="user-info">
                         <span className="user-email">{user?.email}</span>
                         <span className="user-role employee-badge">EMPLOYEE</span>
+                        <button onClick={() => navigate('/profile')} className="profile-btn">👤 Profilim</button>
                         <button onClick={logout} className="logout-btn">Çıkış Yap</button>
                     </div>
                 </div>
@@ -169,12 +172,6 @@ function EmployeeDashboard() {
                         >
                             Geçmişi Gör
                         </button>
-                    </div>
-
-                    <div className="feature-card">
-                        <h3>👤 Profilim</h3>
-                        <p>Profil bilgilerinizi görüntüleyin</p>
-                        <button className="feature-btn">Profili Görüntüle</button>
                     </div>
 
                     <div className="feature-card">

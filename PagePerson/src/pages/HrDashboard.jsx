@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import UserList from '../components/UserManagement/UserList';
 import AnnouncementManagement from '../components/Announcements/AnnouncementManagement';
@@ -9,6 +10,7 @@ import './LeaveDashboard.css';
 import './HrDashboard.css';
 
 function HrDashboard() {
+    const navigate = useNavigate();
     const { user, logout } = useAuth();
     const [refreshTrigger, setRefreshTrigger] = useState(0);
     const [allLeaves, setAllLeaves] = useState([]);
@@ -62,6 +64,7 @@ function HrDashboard() {
                     <div className="user-info">
                         <span className="user-email">{user?.email}</span>
                         <span className="user-role hr-badge">HR</span>
+                        <button onClick={() => navigate('/profile')} className="profile-btn">👤 Profilim</button>
                         <button onClick={logout} className="logout-btn">Çıkış Yap</button>
                     </div>
                 </div>

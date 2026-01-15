@@ -13,7 +13,7 @@ const router = express.Router();
  */
 router.post('/', authenticateToken, authorizeRoles('SYSTEM_ADMIN'), async (req, res) => {
     try {
-        const { email, roleNames } = req.body;
+        const { email, roleNames, firstName, lastName, manager, startDate, title, address, phoneNumber } = req.body;
 
         // Validasyon
         if (!email || !roleNames || roleNames.length === 0) {
@@ -44,6 +44,13 @@ router.post('/', authenticateToken, authorizeRoles('SYSTEM_ADMIN'), async (req, 
             email,
             passwordHash: await User.hashPassword(tempPassword),
             status: 'ACTIVE',
+            ...(firstName && { firstName }),
+            ...(lastName && { lastName }),
+            ...(manager && { manager }),
+            ...(startDate && { startDate: new Date(startDate) }),
+            ...(title && { title }),
+            ...(address && { address }),
+            ...(phoneNumber && { phoneNumber }),
             createdAt: new Date(),
             updatedAt: new Date()
         };
@@ -133,6 +140,54 @@ router.get('/', authenticateToken, authorizeRoles('HR', 'SYSTEM_ADMIN'), async (
 });
 
 /**
+ * GET /api/users/me
+ * Kendi profil bilgilerini getir (Tüm authenticated kullanıcılar)
+ */
+router.get('/me', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.userId;
+
+        const user = await User.findByUserId(userId);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'Kullanıcı bulunamadı.'
+            });
+        }
+
+        const roles = await User.getUserRoles(userId);
+
+        res.json({
+            success: true,
+            data: {
+                user: {
+                    userId: user.userId,
+                    email: user.email,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    status: user.status,
+                    manager: user.manager,
+                    startDate: user.startDate,
+                    title: user.title,
+                    address: user.address,
+                    phoneNumber: user.phoneNumber,
+                    roles: roles.map(r => ({ id: r._id, name: r.name })),
+                    createdAt: user.createdAt,
+                    updatedAt: user.updatedAt
+                }
+            }
+        });
+
+    } catch (error) {
+        console.error('Profil bilgisi hatası:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Profil bilgisi alınamadı.'
+        });
+    }
+});
+
+/**
  * GET /api/users/:userId
  * Kullanıcı detayı (Sadece HR ve SYSTEM_ADMIN)
  */
@@ -156,7 +211,14 @@ router.get('/:userId', authenticateToken, authorizeRoles('HR', 'SYSTEM_ADMIN'), 
                 user: {
                     userId: user.userId,
                     email: user.email,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
                     status: user.status,
+                    manager: user.manager,
+                    startDate: user.startDate,
+                    title: user.title,
+                    address: user.address,
+                    phoneNumber: user.phoneNumber,
                     roles: roles.map(r => ({ id: r._id, name: r.name })),
                     createdAt: user.createdAt,
                     updatedAt: user.updatedAt
@@ -169,6 +231,68 @@ router.get('/:userId', authenticateToken, authorizeRoles('HR', 'SYSTEM_ADMIN'), 
         res.status(500).json({
             success: false,
             message: 'Kullanıcı bilgisi alınamadı.'
+        });
+    }
+});
+
+
+
+/**
+ * PUT /api/users/me/password
+ * Kullanıcı kendi şifresini değiştirir (requires current password)
+ */
+router.put('/me/password', authenticateToken, async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+        const userId = req.user.userId;
+
+        // Validasyon
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({
+                success: false,
+                message: 'Mevcut şifre ve yeni şifre gereklidir.'
+            });
+        }
+
+        if (newPassword.length < 6) {
+            return res.status(400).json({
+                success: false,
+                message: 'Yeni şifre en az 6 karakter olmalıdır.'
+            });
+        }
+
+        // Kullanıcıyı bul
+        const user = await User.findByUserId(userId);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'Kullanıcı bulunamadı.'
+            });
+        }
+
+        // Mevcut şifreyi doğrula
+        const isPasswordValid = await User.comparePassword(currentPassword, user.passwordHash);
+        if (!isPasswordValid) {
+            return res.status(401).json({
+                success: false,
+                message: 'Mevcut şifre yanlış.'
+            });
+        }
+
+        // Yeni şifreyi hash'le ve güncelle
+        const newPasswordHash = await User.hashPassword(newPassword);
+        await User.updateByUserId(userId, { passwordHash: newPasswordHash });
+
+        res.json({
+            success: true,
+            message: 'Şifre başarıyla değiştirildi.'
+        });
+
+    } catch (error) {
+        console.error('Şifre değiştirme hatası:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Şifre değiştirilemedi.'
         });
     }
 });

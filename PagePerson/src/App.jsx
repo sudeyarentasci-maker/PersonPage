@@ -8,6 +8,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import HrDashboard from "./pages/HrDashboard";
 import ManagerDashboard from "./pages/ManagerDashboard";
 import EmployeeDashboard from "./pages/EmployeeDashboard";
+import Profile from "./pages/Profile";
 
 function App() {
   return (
@@ -50,6 +51,16 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['EMPLOYEE']}>
                 <EmployeeDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Profile - Available to all authenticated users */}
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute allowedRoles={['SYSTEM_ADMIN', 'HR', 'MANAGER', 'EMPLOYEE']}>
+                <Profile />
               </ProtectedRoute>
             }
           />

@@ -41,6 +41,14 @@ export async function getUserById(userId) {
 }
 
 /**
+ * Kendi profil bilgilerini getir
+ */
+export async function getMyProfile() {
+    const response = await api.get('/users/me');
+    return response.data;
+}
+
+/**
  * Kullanıcı sil
  */
 export async function deleteUser(userId) {
@@ -80,13 +88,23 @@ export async function updateUserStatus(userId, status) {
     return response.data;
 }
 
+/**
+ * Kendi şifresini değiştir (requires current password)
+ */
+export async function changeOwnPassword(currentPassword, newPassword) {
+    const response = await api.put('/users/me/password', { currentPassword, newPassword });
+    return response.data;
+}
+
 export default {
     createUser,
     getAllUsers,
     getUserById,
+    getMyProfile,
     deleteUser,
     updateUserEmail,
     updateUserPassword,
     updateUserRoles,
-    updateUserStatus
+    updateUserStatus,
+    changeOwnPassword
 };

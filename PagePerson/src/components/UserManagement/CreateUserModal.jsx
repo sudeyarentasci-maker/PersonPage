@@ -1,15 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { createUser } from '../../services/userService';
+import { createUser, getAllUsers } from '../../services/userService';
 import './UserManagement.css';
 
 function CreateUserModal({ isOpen, onClose, onUserCreated }) {
     const [email, setEmail] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
     const [selectedRoles, setSelectedRoles] = useState(['EMPLOYEE']);
+    const [manager, setManager] = useState('');
+    const [startDate, setStartDate] = useState('');
+    const [title, setTitle] = useState('');
+    const [address, setAddress] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [createdPassword, setCreatedPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [users, setUsers] = useState([]);
 
     const availableRoles = [
         { value: 'SYSTEM_ADMIN', label: 'Sistem Yöneticisi' },
@@ -17,6 +25,24 @@ function CreateUserModal({ isOpen, onClose, onUserCreated }) {
         { value: 'MANAGER', label: 'Yönetici' },
         { value: 'EMPLOYEE', label: 'Çalışan' }
     ];
+
+    // Fetch users for manager dropdown
+    useEffect(() => {
+        if (isOpen) {
+            fetchUsers();
+        }
+    }, [isOpen]);
+
+    const fetchUsers = async () => {
+        try {
+            const result = await getAllUsers();
+            if (result.success) {
+                setUsers(result.data.users);
+            }
+        } catch (err) {
+            console.error('Failed to fetch users:', err);
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -26,14 +52,28 @@ function CreateUserModal({ isOpen, onClose, onUserCreated }) {
         try {
             const result = await createUser({
                 email,
-                roleNames: selectedRoles
+                firstName: firstName || undefined,
+                lastName: lastName || undefined,
+                roleNames: selectedRoles,
+                manager: manager || undefined,
+                startDate: startDate || undefined,
+                title: title || undefined,
+                address: address || undefined,
+                phoneNumber: phoneNumber || undefined
             });
 
             if (result.success) {
                 setCreatedPassword(result.data.tempPassword);
                 setShowPassword(true);
                 setEmail('');
+                setFirstName('');
+                setLastName('');
                 setSelectedRoles(['EMPLOYEE']);
+                setManager('');
+                setStartDate('');
+                setTitle('');
+                setAddress('');
+                setPhoneNumber('');
 
                 // Kullanıcı oluşturuldu callback
                 if (onUserCreated) {
@@ -54,7 +94,14 @@ function CreateUserModal({ isOpen, onClose, onUserCreated }) {
 
     const handleClose = () => {
         setEmail('');
+        setFirstName('');
+        setLastName('');
         setSelectedRoles(['EMPLOYEE']);
+        setManager('');
+        setStartDate('');
+        setTitle('');
+        setAddress('');
+        setPhoneNumber('');
         setError('');
         setCreatedPassword('');
         setShowPassword(false);
@@ -100,6 +147,28 @@ function CreateUserModal({ isOpen, onClose, onUserCreated }) {
                         </div>
 
                         <div className="form-group">
+                            <label>Ad</label>
+                            <input
+                                type="text"
+                                value={firstName}
+                                onChange={(e) => setFirstName(e.target.value)}
+                                placeholder="Kullanıcının adı"
+                                disabled={isLoading}
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label>Soyad</label>
+                            <input
+                                type="text"
+                                value={lastName}
+                                onChange={(e) => setLastName(e.target.value)}
+                                placeholder="Kullanıcının soyadı"
+                                disabled={isLoading}
+                            />
+                        </div>
+
+                        <div className="form-group">
                             <label>Roller (En az 1 seçin)</label>
                             <div className="roles-checkbox-group">
                                 {availableRoles.map((role) => (
@@ -114,6 +183,68 @@ function CreateUserModal({ isOpen, onClose, onUserCreated }) {
                                     </label>
                                 ))}
                             </div>
+                        </div>
+
+                        <div className="form-group">
+                            <label>Ünvan</label>
+                            <input
+                                type="text"
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                                placeholder="Örn: Yazılım Geliştirici"
+                                disabled={isLoading}
+                            />
+                        </div>
+
+                        {/* Yönetici alanı sadece EMPLOYEE rolü seçildiğinde göster */}
+                        {selectedRoles.includes('EMPLOYEE') && (
+                            <div className="form-group">
+                                <label>Yönetici</label>
+                                <select
+                                    value={manager}
+                                    onChange={(e) => setManager(e.target.value)}
+                                    disabled={isLoading}
+                                >
+                                    <option value="">Yönetici Seç (Opsiyonel)</option>
+                                    {users.filter(u => u.roles.includes('MANAGER') || u.roles.includes('HR')).map((user) => (
+                                        <option key={user.userId} value={user.userId}>
+                                            {user.email}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
+
+                        <div className="form-group">
+                            <label>İşe Başlama Tarihi</label>
+                            <input
+                                type="date"
+                                value={startDate}
+                                onChange={(e) => setStartDate(e.target.value)}
+                                disabled={isLoading}
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label>Telefon Numarası</label>
+                            <input
+                                type="tel"
+                                value={phoneNumber}
+                                onChange={(e) => setPhoneNumber(e.target.value)}
+                                placeholder="Örn: +90 555 123 45 67"
+                                disabled={isLoading}
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label>Adres</label>
+                            <textarea
+                                value={address}
+                                onChange={(e) => setAddress(e.target.value)}
+                                placeholder="Ev veya ofis adresi"
+                                rows="2"
+                                disabled={isLoading}
+                            />
                         </div>
 
                         <div className="modal-actions">

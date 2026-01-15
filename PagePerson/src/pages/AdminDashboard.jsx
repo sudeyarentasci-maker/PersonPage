@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import CreateUserModal from '../components/UserManagement/CreateUserModal';
 import UserList from '../components/UserManagement/UserList';
@@ -9,6 +10,7 @@ import './Dashboard.css';
 import './LeaveDashboard.css';
 
 function AdminDashboard() {
+    const navigate = useNavigate();
     const { user, logout } = useAuth();
     const [isUserModalOpen, setIsUserModalOpen] = useState(false);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -55,6 +57,7 @@ function AdminDashboard() {
                     <div className="user-info">
                         <span className="user-email">{user?.email}</span>
                         <span className="user-role admin-badge">ADMIN</span>
+                        <button onClick={() => navigate('/profile')} className="profile-btn">👤 Profilim</button>
                         <button onClick={logout} className="logout-btn">Çıkış Yap</button>
                     </div>
                 </div>

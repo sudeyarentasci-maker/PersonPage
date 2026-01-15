@@ -70,6 +70,23 @@
     color: white;
 }
 
+.profile-btn {
+    background: linear-gradient(135deg, #48c6ef 0%, #6f86d6 100%);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.profile-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(111, 134, 214, 0.3);
+}
+
 .logout-btn {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;

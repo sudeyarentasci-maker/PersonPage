@@ -106,8 +106,10 @@ function AnnouncementList() {
                     {announcements.map((announcement) => {
                         const priority = getPriorityBadge(announcement.priority);
                         return (
-                            <div key={announcement.announcementId} className="announcement-card">
-                                {/* Hover Butonları - Sadece HR için */}
+                            <div
+                                key={announcement.announcementId}
+                                className={`announcement-card priority-${announcement.priority.toLowerCase()}`}
+                            >    {/* Hover Butonları - Sadece HR için */}
                                 {canManageAnnouncements && (
                                     <div className="announcement-actions">
                                         <button

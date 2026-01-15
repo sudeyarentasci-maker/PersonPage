@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { getPendingLeaves, approveLeave, rejectLeave, getTeamLeaves } from '../services/leaveService';
 import AnnouncementList from '../components/Announcements/AnnouncementList';
@@ -7,6 +8,7 @@ import './LeaveDashboard.css';
 import './ManagerDashboard.css';
 
 function ManagerDashboard() {
+    const navigate = useNavigate();
     const { user, logout } = useAuth();
     const [pendingLeaves, setPendingLeaves] = useState([]);
     const [allTeamLeaves, setAllTeamLeaves] = useState([]);
@@ -105,6 +107,7 @@ function ManagerDashboard() {
                     <div className="user-info">
                         <span className="user-email">{user?.email}</span>
                         <span className="user-role manager-badge">MANAGER</span>
+                        <button onClick={() => navigate('/profile')} className="profile-btn">👤 Profilim</button>
                         <button onClick={logout} className="logout-btn">Çıkış Yap</button>
                     </div>
                 </div>
