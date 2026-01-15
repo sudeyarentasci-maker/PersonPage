@@ -85,6 +85,8 @@ router.post('/login', async (req, res) => {
                 user: {
                     userId: user.userId,
                     email: user.email,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
                     status: user.status,
                     primaryRole: primaryRole.name,
                     roles: roles.map(r => ({
