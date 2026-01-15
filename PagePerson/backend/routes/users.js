@@ -13,7 +13,7 @@ const router = express.Router();
  */
 router.post('/', authenticateToken, authorizeRoles('SYSTEM_ADMIN'), async (req, res) => {
     try {
-        const { email, roleNames, firstName, lastName, manager, startDate, title, address, phoneNumber } = req.body;
+        const { email, roleNames, firstName, lastName, manager, startDate, birthDate, title, address, phoneNumber } = req.body;
 
         // Validasyon
         if (!email || !roleNames || roleNames.length === 0) {
@@ -48,6 +48,7 @@ router.post('/', authenticateToken, authorizeRoles('SYSTEM_ADMIN'), async (req, 
             ...(lastName && { lastName }),
             ...(manager && { manager }),
             ...(startDate && { startDate: new Date(startDate) }),
+            ...(birthDate && { birthDate: new Date(birthDate) }),
             ...(title && { title }),
             ...(address && { address }),
             ...(phoneNumber && { phoneNumber }),

@@ -4,6 +4,7 @@ import { useAuth } from '../auth/AuthContext';
 import CreateUserModal from '../components/UserManagement/CreateUserModal';
 import UserList from '../components/UserManagement/UserList';
 import AnnouncementList from '../components/Announcements/AnnouncementList';
+import DashboardWidgets from '../components/Dashboard/DashboardWidgets';
 import SystemSettings from './SystemSettings';
 import { getAllLeaves } from '../services/leaveService';
 import './Dashboard.css';
@@ -139,6 +140,9 @@ function AdminDashboard() {
                         </button>
                     </div>
                 </div>
+
+                {/* Dashboard Widgets (Birthdays, Leaves, Holidays) */}
+                <DashboardWidgets />
 
                 {/* Duyurular */}
                 <AnnouncementList />

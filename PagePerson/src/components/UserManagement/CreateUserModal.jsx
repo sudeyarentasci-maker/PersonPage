@@ -10,6 +10,7 @@ function CreateUserModal({ isOpen, onClose, onUserCreated }) {
     const [selectedRoles, setSelectedRoles] = useState(['EMPLOYEE']);
     const [manager, setManager] = useState('');
     const [startDate, setStartDate] = useState('');
+    const [birthDate, setBirthDate] = useState('');
     const [title, setTitle] = useState('');
     const [address, setAddress] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
@@ -221,6 +222,16 @@ function CreateUserModal({ isOpen, onClose, onUserCreated }) {
                                 type="date"
                                 value={startDate}
                                 onChange={(e) => setStartDate(e.target.value)}
+                                disabled={isLoading}
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label>Doğum Tarihi</label>
+                            <input
+                                type="date"
+                                value={birthDate}
+                                onChange={(e) => setBirthDate(e.target.value)}
                                 disabled={isLoading}
                             />
                         </div>

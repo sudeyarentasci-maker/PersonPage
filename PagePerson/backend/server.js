@@ -8,6 +8,7 @@ import leavesRoutes from './routes/leaves.js';
 import announcementsRoutes from './routes/announcements.js';
 import systemSettingsRoutes from './routes/systemSettings.js';
 import tasksRoutes from './routes/tasks.js';
+import dashboardRoutes from './routes/dashboard.js';
 
 // Environment variables yükle
 dotenv.config();
@@ -37,6 +38,7 @@ app.use('/api/leaves', leavesRoutes);
 app.use('/api/announcements', announcementsRoutes);
 app.use('/api/system-settings', systemSettingsRoutes);
 app.use('/api/tasks', tasksRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
