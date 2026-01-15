@@ -21,8 +21,22 @@
     width: 90%;
     max-height: 85vh;
     overflow-y: auto;
+    overflow-x: hidden;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     animation: modalSlideIn 0.3s ease-out;
+}
+
+/* Hide scrollbar but keep functionality */
+.modal-content::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+}
+
+.modal-content {
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
 }
 
 @keyframes modalSlideIn {
@@ -87,28 +101,35 @@
 
 .form-group label {
     font-weight: 600;
-    color: #555;
-    font-size: 13px;
+    color: #374151;
+    font-size: 14px;
+    margin-bottom: 2px;
+    letter-spacing: -0.01em;
 }
 
 .form-group input[type="email"],
 .form-group input[type="text"],
 .form-group input[type="date"],
+.form-group input[type="tel"],
+.form-group textarea,
 .form-group select {
-    padding: 10px 14px;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
+    padding: 11px 15px;
+    border: 1.5px solid #d1d5db;
+    border-radius: 10px;
     font-size: 15px;
     transition: all 0.2s;
-    background: white;
-    cursor: pointer;
+    background: #fafafa;
+    color: #1f2937;
+    font-family: inherit;
 }
 
 .form-group input:focus,
+.form-group textarea:focus,
 .form-group select:focus {
     outline: none;
     border-color: #7c3aed;
-    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.08);
 }
 
 /* Select Enhancement - Custom Dropdown Arrow */

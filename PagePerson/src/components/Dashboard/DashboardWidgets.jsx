@@ -88,13 +88,8 @@ function DashboardWidgets() {
                                         </div>
                                         <div className="user-name">{leave.name}</div>
                                     </div>
-                                    <div className="item-details">
-                                        <div className="item-date">{leave.days}g</div>
-                                        <div className={`item-badge ${new Date(leave.startDate) <= new Date() ? 'badge-today' : 'badge-soon'}`}>
-                                            {new Date(leave.startDate).toDateString() === new Date().toDateString()
-                                                ? 'Bugün'
-                                                : formatDate(leave.startDate)}
-                                        </div>
+                                    <div className="item-date">
+                                        {formatDate(leave.startDate)} • {leave.days}g
                                     </div>
                                 </div>
                             ))}

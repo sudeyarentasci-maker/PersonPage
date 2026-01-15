@@ -79,6 +79,15 @@ router.post('/', authenticateToken, authorizeRoles('SYSTEM_ADMIN'), async (req, 
 
         await db.collection('user_roles').insertMany(userRoles);
 
+        // If manager is assigned, create employee_manager relationship
+        if (manager) {
+            await db.collection('employee_manager').insertOne({
+                employeeId: userId,
+                managerId: manager,
+                assignedAt: new Date()
+            });
+        }
+
         // Başarılı yanıt
         res.status(201).json({
             success: true,
@@ -158,6 +167,24 @@ router.get('/me', authenticateToken, async (req, res) => {
 
         const roles = await User.getUserRoles(userId);
 
+        // Get manager info from employee_manager collection
+        const db = getDatabase();
+        const managerRelation = await db.collection('employee_manager')
+            .findOne({ employeeId: userId });
+
+        let managerInfo = null;
+        if (managerRelation) {
+            const managerUser = await User.findByUserId(managerRelation.managerId);
+            if (managerUser) {
+                managerInfo = {
+                    userId: managerUser.userId,
+                    email: managerUser.email,
+                    firstName: managerUser.firstName,
+                    lastName: managerUser.lastName
+                };
+            }
+        }
+
         res.json({
             success: true,
             data: {
@@ -168,6 +195,7 @@ router.get('/me', authenticateToken, async (req, res) => {
                     lastName: user.lastName,
                     status: user.status,
                     manager: user.manager,
+                    managerInfo: managerInfo,
                     startDate: user.startDate,
                     title: user.title,
                     address: user.address,

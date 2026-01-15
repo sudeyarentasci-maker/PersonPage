@@ -23,16 +23,9 @@ function Profile() {
             if (result.success) {
                 setUser(result.data.user);
 
-                // Fetch manager info if exists (only works for HR/ADMIN)
-                if (result.data.user.manager) {
-                    try {
-                        const users = await getAllUsers();
-                        const managerUser = users.data.users.find(u => u.userId === result.data.user.manager);
-                        setManager(managerUser);
-                    } catch (managerErr) {
-                        // User doesn't have permission to get all users, that's okay
-                        console.log('Could not fetch manager info (permission denied)');
-                    }
+                // Manager info is now directly included in the response
+                if (result.data.user.managerInfo) {
+                    setManager(result.data.user.managerInfo);
                 }
             }
         } catch (err) {
@@ -123,7 +116,11 @@ function Profile() {
                     <div className="info-grid">
                         <div className="info-item">
                             <label>Yönetici</label>
-                            <div className="info-value">{manager ? manager.email : '-'}</div>
+                            <div className="info-value">
+                                {manager
+                                    ? `${manager.firstName || ''} ${manager.lastName || ''} (${manager.email})`.trim()
+                                    : '-'}
+                            </div>
                         </div>
                         <div className="info-item">
                             <label>Telefon</label>

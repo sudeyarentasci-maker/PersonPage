@@ -50,6 +50,25 @@ function CreateUserModal({ isOpen, onClose, onUserCreated }) {
         setError('');
         setIsLoading(true);
 
+        // Validation
+        if (!email || !email.includes('@')) {
+            setError('Geçerli bir e-posta adresi giriniz.');
+            setIsLoading(false);
+            return;
+        }
+
+        if (!firstName || !lastName) {
+            setError('Ad ve Soyad alanları zorunludur.');
+            setIsLoading(false);
+            return;
+        }
+
+        if (selectedRoles.length === 0) {
+            setError('En az bir rol seçmelisiniz.');
+            setIsLoading(false);
+            return;
+        }
+
         try {
             const result = await createUser({
                 email,
@@ -58,6 +77,7 @@ function CreateUserModal({ isOpen, onClose, onUserCreated }) {
                 roleNames: selectedRoles,
                 manager: manager || undefined,
                 startDate: startDate || undefined,
+                birthDate: birthDate || undefined,
                 title: title || undefined,
                 address: address || undefined,
                 phoneNumber: phoneNumber || undefined
@@ -72,6 +92,7 @@ function CreateUserModal({ isOpen, onClose, onUserCreated }) {
                 setSelectedRoles(['EMPLOYEE']);
                 setManager('');
                 setStartDate('');
+                setBirthDate('');
                 setTitle('');
                 setAddress('');
                 setPhoneNumber('');
@@ -100,6 +121,7 @@ function CreateUserModal({ isOpen, onClose, onUserCreated }) {
         setSelectedRoles(['EMPLOYEE']);
         setManager('');
         setStartDate('');
+        setBirthDate('');
         setTitle('');
         setAddress('');
         setPhoneNumber('');
@@ -207,9 +229,11 @@ function CreateUserModal({ isOpen, onClose, onUserCreated }) {
                                     disabled={isLoading}
                                 >
                                     <option value="">Yönetici Seç (Opsiyonel)</option>
-                                    {users.filter(u => u.roles.includes('MANAGER') || u.roles.includes('HR')).map((user) => (
+                                    {users.filter(u => u.roles.includes('MANAGER')).map((user) => (
                                         <option key={user.userId} value={user.userId}>
-                                            {user.email}
+                                            {user.firstName && user.lastName
+                                                ? `${user.firstName} ${user.lastName} (${user.email})`
+                                                : user.email}
                                         </option>
                                     ))}
                                 </select>

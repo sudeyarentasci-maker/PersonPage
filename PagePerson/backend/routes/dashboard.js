@@ -71,10 +71,16 @@ router.get('/widgets', authenticateToken, async (req, res) => {
             .slice(0, 5);
 
         // 2. Upcoming Leaves (Next 7 days)
-        const leaves = await db.collection('leaves').aggregate([
+        const sevenDaysFromNow = new Date();
+        sevenDaysFromNow.setDate(today.getDate() + 7);
+
+        const leaves = await db.collection('leave_requests').aggregate([
             {
                 $match: {
-                    startDate: { $gte: today.toISOString(), $lte: new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString() },
+                    startDate: {
+                        $gte: today,
+                        $lte: sevenDaysFromNow
+                    },
                     status: 'APPROVED'
                 }
             },
@@ -86,7 +92,8 @@ router.get('/widgets', authenticateToken, async (req, res) => {
                     as: 'user'
                 }
             },
-            { $unwind: '$user' }
+            { $unwind: '$user' },
+            { $sort: { startDate: 1 } }
         ]).toArray();
 
         // 3. Next Holiday
