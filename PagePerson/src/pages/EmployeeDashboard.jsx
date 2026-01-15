@@ -179,6 +179,18 @@ function EmployeeDashboard() {
                         <p>Şirket duyurularını okuyun</p>
                         <button className="feature-btn">Duyuruları Gör</button>
                     </div>
+
+                    <div className="feature-card">
+                        <h3>🚀 Projeler & Görevler</h3>
+                        <p>Agile/Scrumban panosuna git</p>
+                        <button
+                            type="button"
+                            className="feature-btn"
+                            onClick={() => navigate('/board')}
+                        >
+                            Panoya Git
+                        </button>
+                    </div>
                 </div>
 
                 {/* Duyurular */}
