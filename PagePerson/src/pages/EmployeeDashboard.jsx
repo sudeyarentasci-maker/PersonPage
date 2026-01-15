@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { createLeaveRequest, getMyLeaves, getLeaveStats } from '../services/leaveService';
 import AnnouncementList from '../components/Announcements/AnnouncementList';
+import DashboardWidgets from '../components/Dashboard/DashboardWidgets';
 import './Dashboard.css';
 import './LeaveDashboard.css';
 
@@ -101,7 +102,6 @@ function EmployeeDashboard() {
                 <div className="header-content">
                     <h1>👤 Çalışan Dashboard</h1>
                     <div className="user-info">
-                        <span className="user-email">{user?.email}</span>
                         <span className="user-role employee-badge">EMPLOYEE</span>
                         <button onClick={() => navigate('/profile')} className="profile-btn">👤 Profilim</button>
                         <button onClick={logout} className="logout-btn">Çıkış Yap</button>
@@ -111,8 +111,14 @@ function EmployeeDashboard() {
 
             <div className="dashboard-content">
                 <div className="welcome-section">
-                    <h2>Hoş Geldiniz! 👋</h2>
-                    <p>Çalışan paneline hoş geldiniz, <strong>{user?.email}</strong></p>
+                    <h2>
+                        {user?.firstName ? (
+                            <>Hoşgeldin {user.firstName}!</>
+                        ) : (
+                            'Hoşgeldiniz!'
+                        )} 👋
+                    </h2>
+                    <p>Çalışan paneline hoş geldiniz</p>
                 </div>
 
                 {/* İstatistikler */}
@@ -195,6 +201,9 @@ function EmployeeDashboard() {
 
                 {/* Duyurular */}
                 <AnnouncementList />
+
+                {/* Dashboard Widgets */}
+                <DashboardWidgets />
 
                 {/* İzin Listesi */}
                 <div id="leave-history-section" className="leave-list-section">

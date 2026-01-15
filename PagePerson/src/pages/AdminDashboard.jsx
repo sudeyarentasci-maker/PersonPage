@@ -56,7 +56,6 @@ function AdminDashboard() {
                 <div className="header-content">
                     <h1>⚙️ Sistem Yöneticisi Dashboard</h1>
                     <div className="user-info">
-                        <span className="user-email">{user?.email}</span>
                         <span className="user-role admin-badge">ADMIN</span>
                         <button onClick={() => navigate('/profile')} className="profile-btn">👤 Profilim</button>
                         <button onClick={logout} className="logout-btn">Çıkış Yap</button>
@@ -66,8 +65,14 @@ function AdminDashboard() {
 
             <div className="dashboard-content">
                 <div className="welcome-section">
-                    <h2>Hoş Geldiniz! 👋</h2>
-                    <p>Sistem yöneticisi paneline hoş geldiniz, <strong>{user?.email}</strong></p>
+                    <h2>
+                        {user?.firstName ? (
+                            <>Hoşgeldin {user.firstName}!</>
+                        ) : (
+                            'Hoşgeldiniz!'
+                        )} 👋
+                    </h2>
+                    <p>Sistem yöneticisi paneline hoş geldiniz</p>
                 </div>
 
                 <div className="stats-grid">

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { getPendingLeaves, approveLeave, rejectLeave, getTeamLeaves } from '../services/leaveService';
 import AnnouncementList from '../components/Announcements/AnnouncementList';
+import DashboardWidgets from '../components/Dashboard/DashboardWidgets';
 import './Dashboard.css';
 import './LeaveDashboard.css';
 import './ManagerDashboard.css';
@@ -105,7 +106,6 @@ function ManagerDashboard() {
                 <div className="header-content">
                     <h1>👔 Yönetici Dashboard</h1>
                     <div className="user-info">
-                        <span className="user-email">{user?.email}</span>
                         <span className="user-role manager-badge">MANAGER</span>
                         <button onClick={() => navigate('/profile')} className="profile-btn">👤 Profilim</button>
                         <button onClick={logout} className="logout-btn">Çıkış Yap</button>
@@ -115,8 +115,14 @@ function ManagerDashboard() {
 
             <div className="dashboard-content">
                 <div className="welcome-section">
-                    <h2>Hoş Geldiniz! 👋</h2>
-                    <p>Yönetici paneline hoş geldiniz, <strong>{user?.email}</strong></p>
+                    <h2>
+                        {user?.firstName ? (
+                            <>Hoşgeldin {user.firstName}!</>
+                        ) : (
+                            'Hoşgeldiniz!'
+                        )} 👋
+                    </h2>
+                    <p>Yönetici paneline hoş geldiniz</p>
                 </div>
 
                 {/* İstatistikler */}
@@ -200,6 +206,9 @@ function ManagerDashboard() {
 
                 {/* Duyurular */}
                 <AnnouncementList />
+
+                {/* Dashboard Widgets */}
+                <DashboardWidgets />
 
                 {/* Tüm Ekip İzinleri */}
                 <div className="leave-list-section">

@@ -62,7 +62,6 @@ function HrDashboard() {
                 <div className="header-content">
                     <h1>👥 İnsan Kaynakları Dashboard</h1>
                     <div className="user-info">
-                        <span className="user-email">{user?.email}</span>
                         <span className="user-role hr-badge">HR</span>
                         <button onClick={() => navigate('/profile')} className="profile-btn">👤 Profilim</button>
                         <button onClick={logout} className="logout-btn">Çıkış Yap</button>
@@ -72,8 +71,14 @@ function HrDashboard() {
 
             <div className="dashboard-content">
                 <div className="welcome-section">
-                    <h2>Hoş Geldiniz! 👋</h2>
-                    <p>İnsan Kaynakları paneline hoş geldiniz, <strong>{user?.email}</strong></p>
+                    <h2>
+                        {user?.firstName ? (
+                            <>Hoşgeldin {user.firstName}!</>
+                        ) : (
+                            'Hoşgeldiniz!'
+                        )} 👋
+                    </h2>
+                    <p>İnsan Kaynakları paneline hoş geldiniz</p>
                 </div>
 
                 <div className="stats-grid">
