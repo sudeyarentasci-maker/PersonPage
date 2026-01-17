@@ -4,6 +4,7 @@ import { authenticateToken, authorizeRoles } from '../middleware/auth.js';
 import { generateRandomPassword } from '../utils/passwordGenerator.js';
 import { generateUserId } from '../utils/userIdGenerator.js';
 import { getDatabase } from '../config/database.js';
+import { logUserAction } from '../utils/logger.js';
 
 const router = express.Router();
 
@@ -87,6 +88,18 @@ router.post('/', authenticateToken, authorizeRoles('SYSTEM_ADMIN'), async (req, 
                 assignedAt: new Date()
             });
         }
+
+        // Kullanıcı oluşturma log kaydı
+        await logUserAction(
+            'Yeni kullanıcı oluşturuldu',
+            {
+                userId: req.user.userId,
+                userName: req.user.email,
+                userEmail: req.user.email
+            },
+            { email },
+            `Kullanıcı: ${email}, Roller: ${roleNames.join(', ')}`
+        );
 
         // Başarılı yanıt
         res.status(201).json({
@@ -544,6 +557,7 @@ router.put('/:userId/status', authenticateToken, authorizeRoles('SYSTEM_ADMIN'),
 /**
  * DELETE /api/users/:userId
  * Kullanıcıyı tamamen sil (SADECE SYSTEM_ADMIN)
+ * CASCADE DELETE: Kullanıcıya ait tüm veriler silinir
  */
 router.delete('/:userId', authenticateToken, authorizeRoles('SYSTEM_ADMIN'), async (req, res) => {
     try {
@@ -568,23 +582,71 @@ router.delete('/:userId', authenticateToken, authorizeRoles('SYSTEM_ADMIN'), asy
             });
         }
 
-        // 1. user_roles silme
-        await db.collection('user_roles').deleteMany({ userId });
+        // CASCADE DELETE - Kullanıcıya ait tüm verileri sil
+        console.log(`🗑️ CASCADE DELETE başlatıldı: ${userId} (${user.email})`);
 
-        // 2. employee_manager ilişkilerini silme (hem employee hem manager olarak)
-        await db.collection('employee_manager').deleteMany({
+        // 1. user_roles - Kullanıcının rol ilişkileri
+        const rolesResult = await db.collection('user_roles').deleteMany({ userId });
+        console.log(`  ✓ Silindi ${rolesResult.deletedCount} rol ilişkisi`);
+
+        // 2. employee_manager - Hem employee hem manager olarak ilişkiler
+        const managerResult = await db.collection('employee_manager').deleteMany({
             $or: [
                 { employeeId: userId },
                 { managerId: userId }
             ]
         });
+        console.log(`  ✓ Silindi ${managerResult.deletedCount} yönetici ilişkisi`);
 
-        // 3. Kullanıcıyı database'den tamamen sil
+        // 3. leaves - Kullanıcının tüm izin talepleri
+        const leavesResult = await db.collection('leaves').deleteMany({ userId });
+        console.log(`  ✓ Silindi ${leavesResult.deletedCount} izin talebi`);
+
+        // 4. announcements - Kullanıcının oluşturduğu duyurular
+        const announcementsResult = await db.collection('announcements').deleteMany({ createdBy: userId });
+        console.log(`  ✓ Silindi ${announcementsResult.deletedCount} duyuru`);
+
+        // 5. tasks - Kullanıcıya atanan veya oluşturduğu görevler
+        const tasksResult = await db.collection('tasks').deleteMany({
+            $or: [
+                { createdBy: userId },
+                { assignees: userId }
+            ]
+        });
+        console.log(`  ✓ Silindi ${tasksResult.deletedCount} görev`);
+
+        // 6. users - Kullanıcının kendisi
         await db.collection('users').deleteOne({ userId });
+        console.log(`  ✓ Kullanıcı kaydı silindi`);
+
+        console.log(`✅ CASCADE DELETE tamamlandı: ${userId}`);
+
+        // Kullanıcı silme log kaydı
+        await logUserAction(
+            'Kullanıcı silindi',
+            {
+                userId: req.user.userId,
+                userName: req.user.email,
+                userEmail: req.user.email
+            },
+            { email: user.email },
+            `${user.email} - Silinen veriler: ${leavesResult.deletedCount} izin, ${announcementsResult.deletedCount} duyuru, ${tasksResult.deletedCount} görev`
+        );
 
         res.json({
             success: true,
-            message: 'Kullanıcı kalıcı olarak silindi.'
+            message: 'Kullanıcı ve tüm ilişkili verileri kalıcı olarak silindi.',
+            data: {
+                userId,
+                email: user.email,
+                deletedRelations: {
+                    roles: rolesResult.deletedCount,
+                    managerRelations: managerResult.deletedCount,
+                    leaves: leavesResult.deletedCount,
+                    announcements: announcementsResult.deletedCount,
+                    tasks: tasksResult.deletedCount
+                }
+            }
         });
 
     } catch (error) {

@@ -2,6 +2,7 @@ import express from 'express';
 import { Leave } from '../models/Leave.js';
 import { authenticateToken, authorizeRoles } from '../middleware/auth.js';
 import { getDatabase } from '../config/database.js';
+import { logLeaveAction } from '../utils/logger.js';
 
 const router = express.Router();
 
@@ -47,6 +48,15 @@ router.post('/', authenticateToken, async (req, res) => {
         };
 
         const newLeave = await Leave.create(leaveData);
+
+        // İzin talebi oluşturma log kaydı
+        await logLeaveAction(
+            'İzin talebi oluşturuldu',
+            req.user.userId,
+            req.user.email,
+            req.user.email,
+            `${newLeave.days} gün ${leaveType} - Tarih: ${new Date(startDate).toLocaleDateString('tr-TR')} / ${new Date(endDate).toLocaleDateString('tr-TR')}`
+        );
 
         res.status(201).json({
             success: true,
@@ -263,6 +273,17 @@ router.put('/:id/approve', authenticateToken, authorizeRoles('MANAGER', 'HR', 'S
         const success = await Leave.approve(id, req.user.userId, comment || '');
 
         if (success) {
+            // İzin onaylama log kaydı
+            const db = getDatabase();
+            const user = await db.collection('users').findOne({ userId: leave.userId });
+            await logLeaveAction(
+                'İzin talebi onaylandı',
+                req.user.userId,
+                req.user.email,
+                req.user.email,
+                `Çalışan: ${user?.email || 'Bilinmeyen'} - ${leave.days} gün ${leave.leaveType}${comment ? ' - Yorum: ' + comment : ''}`
+            );
+
             res.json({
                 success: true,
                 message: 'İzin onaylandı'
@@ -322,6 +343,17 @@ router.put('/:id/reject', authenticateToken, authorizeRoles('MANAGER', 'HR', 'SY
         const success = await Leave.reject(id, req.user.userId, comment || '');
 
         if (success) {
+            // İzin reddetme log kaydı
+            const db = getDatabase();
+            const user = await db.collection('users').findOne({ userId: leave.userId });
+            await logLeaveAction(
+                'İzin talebi reddedildi',
+                req.user.userId,
+                req.user.email,
+                req.user.email,
+                `Çalışan: ${user?.email || 'Bilinmeyen'} - ${leave.days} gün ${leave.leaveType}${comment ? ' - Sebep: ' + comment : ''}`
+            );
+
             res.json({
                 success: true,
                 message: 'İzin reddedildi'

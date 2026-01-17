@@ -1,6 +1,7 @@
 import express from 'express';
 import { User } from '../models/User.js';
 import { generateToken, authenticateToken } from '../middleware/auth.js';
+import { logLogin } from '../utils/logger.js';
 
 const router = express.Router();
 
@@ -75,6 +76,15 @@ router.post('/login', async (req, res) => {
 
         // Son giriş zamanını güncelle
         await User.updateByUserId(user.userId, { lastLogin: new Date() });
+
+        // Login log kaydı
+        await logLogin(
+            user.userId,
+            `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email,
+            user.email,
+            true,
+            `Başarılı giriş - Rol: ${primaryRole.name}`
+        );
 
         // Başarılı yanıt
         res.json({
