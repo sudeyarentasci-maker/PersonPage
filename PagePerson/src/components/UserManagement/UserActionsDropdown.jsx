@@ -20,9 +20,21 @@ function UserActionsDropdown({ user, onAction }) {
     const handleToggle = () => {
         if (!isOpen && dropdownRef.current) {
             const rect = dropdownRef.current.getBoundingClientRect();
-            const spaceBelow = window.innerHeight - rect.bottom;
-            // Eğer aşağıda 220px'den az yer varsa yukarı doğru aç
-            setOpenUpwards(spaceBelow < 220);
+
+            // Parent container'ı bul (user-list veya table-wrapper)
+            const container = dropdownRef.current.closest('.user-list') ||
+                dropdownRef.current.closest('.table-wrapper');
+
+            if (container) {
+                const containerRect = container.getBoundingClientRect();
+                const spaceBelow = containerRect.bottom - rect.bottom;
+                // Container içinde aşağıda 250px'den az yer varsa yukarı aç
+                setOpenUpwards(spaceBelow < 250);
+            } else {
+                // Fallback: window'a göre
+                const spaceBelow = window.innerHeight - rect.bottom;
+                setOpenUpwards(spaceBelow < 250);
+            }
         }
         setIsOpen(!isOpen);
     };
