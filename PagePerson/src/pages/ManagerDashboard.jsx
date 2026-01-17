@@ -4,6 +4,7 @@ import { useAuth } from '../auth/AuthContext';
 import { getPendingLeaves, approveLeave, rejectLeave, getTeamLeaves } from '../services/leaveService';
 import AnnouncementList from '../components/Announcements/AnnouncementList';
 import DashboardWidgets from '../components/Dashboard/DashboardWidgets';
+import logo from '../../assets/logo.png';
 import './Dashboard.css';
 import './LeaveDashboard.css';
 import './ManagerDashboard.css';
@@ -104,7 +105,10 @@ function ManagerDashboard() {
         <div className="dashboard-wrapper">
             <div className="dashboard-header">
                 <div className="header-content">
-                    <h1>👔 Yönetici Dashboard</h1>
+                    <div className="header-logo">
+                        <img src={logo} alt="PersonPage Logo" className="logo-img" />
+                        <h1>PersonPage</h1>
+                    </div>
                     <div className="user-info">
                         <span className="user-role manager-badge">MANAGER</span>
                         <button onClick={() => navigate('/profile')} className="profile-btn">👤 Profilim</button>

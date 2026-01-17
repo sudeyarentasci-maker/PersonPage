@@ -27,8 +27,22 @@
 
 .dashboard-header h1 {
     margin: 0;
-    font-size: 22px;
+    font-size: 28px;
     color: #333;
+    font-weight: 700;
+}
+
+/* Logo Container */
+.header-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-img {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
 }
 
 .user-info {

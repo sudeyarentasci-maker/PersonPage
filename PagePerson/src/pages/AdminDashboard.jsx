@@ -7,6 +7,7 @@ import AnnouncementList from '../components/Announcements/AnnouncementList';
 import DashboardWidgets from '../components/Dashboard/DashboardWidgets';
 import SystemSettings from './SystemSettings';
 import { getAllLeaves } from '../services/leaveService';
+import logo from '../../assets/logo.png';
 import './Dashboard.css';
 import './LeaveDashboard.css';
 
@@ -54,7 +55,10 @@ function AdminDashboard() {
         <div className="dashboard-wrapper">
             <div className="dashboard-header">
                 <div className="header-content">
-                    <h1>⚙️ Sistem Yöneticisi Dashboard</h1>
+                    <div className="header-logo">
+                        <img src={logo} alt="PersonPage Logo" className="logo-img" />
+                        <h1>PersonPage</h1>
+                    </div>
                     <div className="user-info">
                         <span className="user-role admin-badge">ADMIN</span>
                         <button onClick={() => navigate('/profile')} className="profile-btn">👤 Profilim</button>
