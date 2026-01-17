@@ -1,0 +1,258 @@
+/* Sistem Logları Modal */
+.logs-modal {
+    background: white;
+    border-radius: 12px;
+    width: 95%;
+    max-width: 1400px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* Filtreler */
+.logs-filters {
+    padding: 20px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    gap: 15px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 200px;
+}
+
+.filter-group label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+}
+
+.filter-group select,
+.filter-group input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    background: white;
+}
+
+.filter-group select:focus,
+.filter-group input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.refresh-btn {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.refresh-btn:hover {
+    transform: translateY(-2px);
+}
+
+/* Log İçeriği */
+.logs-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+}
+
+.logs-table-container {
+    overflow-x: auto;
+}
+
+.logs-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.logs-table thead {
+    background: #f8f9fa;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.logs-table th {
+    padding: 12px 15px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    color: #666;
+    text-transform: uppercase;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.logs-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+}
+
+.logs-table tbody tr {
+    transition: background 0.2s;
+}
+
+.logs-table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+/* Severity Colors */
+.severity-info {
+    border-left: 3px solid #4CAF50;
+}
+
+.severity-warning {
+    border-left: 3px solid #FF9800;
+}
+
+.severity-error {
+    border-left: 3px solid #F44336;
+    background: #fff5f5;
+}
+
+/* Log Kolonları */
+.log-time {
+    font-family: 'Courier New', monospace;
+    color: #666;
+    white-space: nowrap;
+    min-width: 140px;
+}
+
+.log-user {
+    font-weight: 500;
+    color: #333;
+    min-width: 150px;
+}
+
+.log-action {
+    color: #555;
+    min-width: 200px;
+}
+
+.log-details {
+    color: #777;
+    font-size: 12px;
+    max-width: 400px;
+}
+
+/* Log Tip Rozetleri */
+.log-type-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.log-type-login {
+    background: #E3F2FD;
+    color: #1976D2;
+}
+
+.log-type-user {
+    background: #F3E5F5;
+    color: #7B1FA2;
+}
+
+.log-type-settings {
+    background: #FFF3E0;
+    color: #E65100;
+}
+
+.log-type-announcement {
+    background: #E8F5E9;
+    color: #2E7D32;
+}
+
+.log-type-leave {
+    background: #FFF9C4;
+    color: #F57F17;
+}
+
+.log-type-error {
+    background: #FFEBEE;
+    color: #C62828;
+}
+
+.log-type-info {
+    background: #E0F7FA;
+    color: #00838F;
+}
+
+.log-type-default {
+    background: #F5F5F5;
+    color: #616161;
+}
+
+/* Footer */
+.logs-footer {
+    padding: 15px 20px;
+    background: #f8f9fa;
+    border-top: 1px solid #e0e0e0;
+    text-align: center;
+}
+
+.logs-footer p {
+    margin: 0;
+    font-size: 13px;
+    color: #666;
+}
+
+/* Loading ve Empty States */
+.loading-state,
+.empty-state {
+    padding: 60px 20px;
+    text-align: center;
+    color: #999;
+    font-size: 14px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .logs-modal {
+        width: 100%;
+        max-width: 100%;
+        max-height: 100vh;
+        border-radius: 0;
+    }
+
+    .logs-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-group {
+        min-width: auto;
+    }
+
+    .logs-table th,
+    .logs-table td {
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+
+    .log-time {
+        min-width: 100px;
+    }
+
+    .log-details {
+        max-width: 200px;
+    }
+}

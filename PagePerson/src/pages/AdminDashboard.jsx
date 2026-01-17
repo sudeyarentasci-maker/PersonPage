@@ -6,6 +6,7 @@ import UserList from '../components/UserManagement/UserList';
 import AnnouncementList from '../components/Announcements/AnnouncementList';
 import DashboardWidgets from '../components/Dashboard/DashboardWidgets';
 import SystemSettings from './SystemSettings';
+import SystemLogs from './SystemLogs';
 import { getAllLeaves } from '../services/leaveService';
 import logo from '../../assets/logo.png';
 import './Dashboard.css';
@@ -16,6 +17,7 @@ function AdminDashboard() {
     const { user, logout } = useAuth();
     const [isUserModalOpen, setIsUserModalOpen] = useState(false);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    const [isLogsOpen, setIsLogsOpen] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
     const [allLeaves, setAllLeaves] = useState([]);
 
@@ -47,7 +49,7 @@ function AdminDashboard() {
         } else if (section === 'settings') {
             setIsSettingsOpen(true);
         } else if (section === 'logs') {
-            alert('📜 Sistem Logları\n\nLog Görüntüleme:\n\n- Kullanıcı aktiviteleri\n- Sistem hataları\n- Güvenlik olayları\n- API istekleri\n\nGerçek log sistemi yakında eklenecek!');
+            setIsLogsOpen(true);
         }
     };
 
@@ -145,7 +147,7 @@ function AdminDashboard() {
                             className="feature-btn"
                             onClick={() => handleSectionClick('logs')}
                         >
-                            Loglar (Yakında)
+                            📜 Logları Görüntüle
                         </button>
                     </div>
                 </div>
@@ -171,6 +173,12 @@ function AdminDashboard() {
             <SystemSettings
                 isOpen={isSettingsOpen}
                 onClose={() => setIsSettingsOpen(false)}
+            />
+
+            {/* Sistem Logları Modal */}
+            <SystemLogs
+                isOpen={isLogsOpen}
+                onClose={() => setIsLogsOpen(false)}
             />
         </div>
     );
