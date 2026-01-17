@@ -65,6 +65,61 @@
     transform: translateY(-2px);
 }
 
+.delete-selected-btn {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.delete-selected-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+}
+
+.delete-selected-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.delete-all-btn {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #F44336 0%, #C62828 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.delete-all-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+}
+
+.cleanup-orphaned-btn {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.cleanup-orphaned-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(156, 39, 176, 0.3);
+}
+
 /* Log İçeriği */
 .logs-content {
     flex: 1;

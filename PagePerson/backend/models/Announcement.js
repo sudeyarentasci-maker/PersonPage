@@ -49,6 +49,20 @@ export class Announcement {
     static async findByUserRoles(userRoles) {
         const db = getDatabase();
 
+        // Önce tarihi geçmiş ACTIVE duyuruları EXPIRED olarak işaretle
+        await db.collection('announcements').updateMany(
+            {
+                status: 'ACTIVE',
+                expiresAt: { $ne: null, $lte: new Date() }
+            },
+            {
+                $set: {
+                    status: 'EXPIRED',
+                    updatedAt: new Date()
+                }
+            }
+        );
+
         return await db.collection('announcements')
             .find({
                 status: 'ACTIVE',
@@ -67,6 +81,20 @@ export class Announcement {
      */
     static async findAll() {
         const db = getDatabase();
+
+        // Önce tarihi geçmiş ACTIVE duyuruları EXPIRED olarak işaretle
+        await db.collection('announcements').updateMany(
+            {
+                status: 'ACTIVE',
+                expiresAt: { $ne: null, $lte: new Date() }
+            },
+            {
+                $set: {
+                    status: 'EXPIRED',
+                    updatedAt: new Date()
+                }
+            }
+        );
 
         return await db.collection('announcements')
             .find({})

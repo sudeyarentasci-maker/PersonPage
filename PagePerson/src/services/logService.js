@@ -23,3 +23,49 @@ export const getSystemLogs = async (filters = {}) => {
         throw error;
     }
 };
+
+// Tüm logları sil
+export const deleteAllLogs = async () => {
+    try {
+        const response = await axios.delete(`${API_URL}/all`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Tüm loglar silinemedi:', error);
+        throw error;
+    }
+};
+
+// Seçili logları sil
+export const deleteSelectedLogs = async (logIds) => {
+    try {
+        const response = await axios.delete(API_URL, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            data: { logIds }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Seçili loglar silinemedi:', error);
+        throw error;
+    }
+};
+
+// Yetim verileri temizle (sistemde olmayan kullanıcıların verileri)
+export const cleanupOrphanedData = async () => {
+    try {
+        const response = await axios.post(`${API_URL}/cleanup-orphaned`, {}, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Yetim veri temizleme hatası:', error);
+        throw error;
+    }
+};

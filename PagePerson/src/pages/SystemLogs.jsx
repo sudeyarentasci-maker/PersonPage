@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { getSystemLogs } from '../services/logService';
+import { getSystemLogs, deleteAllLogs, deleteSelectedLogs, cleanupOrphanedData } from '../services/logService';
 import './SystemLogs.css';
 
 function SystemLogs({ isOpen, onClose }) {
     const [logs, setLogs] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [selectedLogs, setSelectedLogs] = useState([]);
     const [filters, setFilters] = useState({
         type: 'ALL',
         search: ''
@@ -13,6 +14,7 @@ function SystemLogs({ isOpen, onClose }) {
     useEffect(() => {
         if (isOpen) {
             fetchLogs();
+            setSelectedLogs([]);
         }
     }, [isOpen, filters]);
 
@@ -28,6 +30,76 @@ function SystemLogs({ isOpen, onClose }) {
             alert('Loglar yüklenirken bir hata oluştu');
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const handleSelectAll = (e) => {
+        if (e.target.checked) {
+            setSelectedLogs(logs.map(log => log._id));
+        } else {
+            setSelectedLogs([]);
+        }
+    };
+
+    const handleSelectLog = (logId) => {
+        if (selectedLogs.includes(logId)) {
+            setSelectedLogs(selectedLogs.filter(id => id !== logId));
+        } else {
+            setSelectedLogs([...selectedLogs, logId]);
+        }
+    };
+
+    const handleDeleteAll = async () => {
+        if (!window.confirm('⚠️ TÜM LOGLARI SİLMEK ÜZEREsİNİZ!\n\nBu işlem geri alınamaz. Devam etmek istiyor musunuz?')) {
+            return;
+        }
+
+        try {
+            const result = await deleteAllLogs();
+            if (result.success) {
+                alert(`✅ ${result.deletedCount} log kaydı silindi`);
+                fetchLogs();
+            }
+        } catch (error) {
+            alert('❌ Loglar silinemedi');
+        }
+    };
+
+    const handleDeleteSelected = async () => {
+        if (selectedLogs.length === 0) {
+            alert('Lütfen silinecek logları seçin');
+            return;
+        }
+
+        if (!window.confirm(`⚠️ ${selectedLogs.length} LOG KAYDINI SİLMEK ÜZEREsİNİZ!\n\nBu işlem geri alınamaz. Devam etmek istiyor musunuz?`)) {
+            return;
+        }
+
+        try {
+            const result = await deleteSelectedLogs(selectedLogs);
+            if (result.success) {
+                alert(`✅ ${result.deletedCount} log kaydı silindi`);
+                setSelectedLogs([]);
+                fetchLogs();
+            }
+        } catch (error) {
+            alert('❌ Loglar silinemedi');
+        }
+    };
+
+    const handleCleanupOrphaned = async () => {
+        if (!window.confirm('⚠️ SİSTEMDE OLMAYAN KULLANICILARIN VERİLERİNİ TEMİZLE\n\nBu işlem:\n- Silinmiş kullanıcıların izin kayıtlarını\n- Silinmiş kullanıcıların log kayıtlarını\nkalıcı olarak siler.\n\nDevam etmek istiyor musunuz?')) {
+            return;
+        }
+
+        try {
+            const result = await cleanupOrphanedData();
+            if (result.success) {
+                alert(`✅ Temizlik tamamlandı!\n\n${result.data.deletedLeaves} izin kaydı\n${result.data.deletedLogs} log kaydı silindi`);
+                fetchLogs();
+            }
+        } catch (error) {
+            alert('❌ Temizlik yapılamadı');
         }
     };
 
@@ -100,6 +172,22 @@ function SystemLogs({ isOpen, onClose }) {
                     <button className="refresh-btn" onClick={fetchLogs}>
                         🔄 Yenile
                     </button>
+
+                    <button
+                        className="delete-selected-btn"
+                        onClick={handleDeleteSelected}
+                        disabled={selectedLogs.length === 0}
+                    >
+                        🗑️ Seçilenleri Sil ({selectedLogs.length})
+                    </button>
+
+                    <button className="delete-all-btn" onClick={handleDeleteAll}>
+                        ⚠️ Tümünü Sil
+                    </button>
+
+                    <button className="cleanup-orphaned-btn" onClick={handleCleanupOrphaned}>
+                        🧹 Yetim Verileri Temizle
+                    </button>
                 </div>
 
                 <div className="logs-content">
@@ -112,6 +200,13 @@ function SystemLogs({ isOpen, onClose }) {
                             <table className="logs-table">
                                 <thead>
                                     <tr>
+                                        <th>
+                                            <input
+                                                type="checkbox"
+                                                onChange={handleSelectAll}
+                                                checked={selectedLogs.length === logs.length && logs.length > 0}
+                                            />
+                                        </th>
                                         <th>Zaman</th>
                                         <th>Kullanıcı</th>
                                         <th>İşlem</th>
@@ -123,7 +218,14 @@ function SystemLogs({ isOpen, onClose }) {
                                     {logs.map((log) => {
                                         const typeInfo = getLogTypeInfo(log.type);
                                         return (
-                                            <tr key={log.logId} className={getSeverityClass(log.severity)}>
+                                            <tr key={log._id} className={getSeverityClass(log.severity)}>
+                                                <td>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedLogs.includes(log._id)}
+                                                        onChange={() => handleSelectLog(log._id)}
+                                                    />
+                                                </td>
                                                 <td className="log-time">{formatDate(log.timestamp)}</td>
                                                 <td className="log-user">{log.userName}</td>
                                                 <td className="log-action">{log.action}</td>

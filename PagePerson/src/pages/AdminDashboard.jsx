@@ -20,20 +20,41 @@ function AdminDashboard() {
     const [isLogsOpen, setIsLogsOpen] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
     const [allLeaves, setAllLeaves] = useState([]);
+    const [leaveFilter, setLeaveFilter] = useState('ALL'); // ALL, PENDING, APPROVED, REJECTED
 
     useEffect(() => {
         fetchAllLeaves();
-    }, []);
+    }, [leaveFilter]);
 
     const fetchAllLeaves = async () => {
         try {
-            const result = await getAllLeaves();
+            const filters = leaveFilter !== 'ALL' ? { status: leaveFilter } : {};
+            const result = await getAllLeaves(filters);
             if (result.success) {
                 setAllLeaves(result.data.leaves);
             }
         } catch (err) {
             console.error('İzinler yüklenemedi:', err);
         }
+    };
+
+    const getStatusBadge = (status) => {
+        const badges = {
+            'PENDING': { class: 'status-pending', text: '⏳ Beklemede' },
+            'APPROVED': { class: 'status-approved', text: '✅ Onaylandı' },
+            'REJECTED': { class: 'status-rejected', text: '❌ Reddedildi' }
+        };
+        return badges[status] || badges.PENDING;
+    };
+
+    const getLeaveTypeName = (type) => {
+        const types = {
+            'ANNUAL': 'Yıllık İzin',
+            'SICK': 'Hastalık İzni',
+            'PERSONAL': 'Kişisel İzin',
+            'UNPAID': 'Ücretsiz İzin'
+        };
+        return types[type] || type;
     };
 
     const handleUserCreated = (userData) => {
@@ -160,6 +181,79 @@ function AdminDashboard() {
 
                 {/* Kullanıcı Listesi */}
                 <UserList refreshTrigger={refreshTrigger} />
+
+                {/* İzinListesi */}
+                <div id="leave-section" className="leave-list-section">
+                    <div className="section-header">
+                        <h3>📋 Tüm Şirket İzinleri ({allLeaves.length})</h3>
+                        <div className="filter-buttons">
+                            <button
+                                className={`filter-btn ${leaveFilter === 'ALL' ? 'active' : ''}`}
+                                onClick={() => setLeaveFilter('ALL')}
+                            >
+                                Tümü
+                            </button>
+                            <button
+                                className={`filter-btn ${leaveFilter === 'PENDING' ? 'active' : ''}`}
+                                onClick={() => setLeaveFilter('PENDING')}
+                            >
+                                Beklemede
+                            </button>
+                            <button
+                                className={`filter-btn ${leaveFilter === 'APPROVED' ? 'active' : ''}`}
+                                onClick={() => setLeaveFilter('APPROVED')}
+                            >
+                                Onaylı
+                            </button>
+                            <button
+                                className={`filter-btn ${leaveFilter === 'REJECTED' ? 'active' : ''}`}
+                                onClick={() => setLeaveFilter('REJECTED')}
+                            >
+                                Reddedildi
+                            </button>
+                        </div>
+                    </div>
+
+                    {allLeaves.length === 0 ? (
+                        <p className="empty-state">İzin kaydı bulunamadı.</p>
+                    ) : (
+                        <table className="leave-table">
+                            <thead>
+                                <tr>
+                                    <th>Çalışan</th>
+                                    <th>Başlangıç</th>
+                                    <th>Bitiş</th>
+                                    <th>Tip</th>
+                                    <th>Gün</th>
+                                    <th>Sebep</th>
+                                    <th>Durum</th>
+                                    <th>Yorum</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {allLeaves.map((leave) => {
+                                    const statusBadge = getStatusBadge(leave.status);
+                                    return (
+                                        <tr key={leave.leaveId}>
+                                            <td>{leave.userName}</td>
+                                            <td>{new Date(leave.startDate).toLocaleDateString('tr-TR')}</td>
+                                            <td>{new Date(leave.endDate).toLocaleDateString('tr-TR')}</td>
+                                            <td>{getLeaveTypeName(leave.leaveType)}</td>
+                                            <td>{leave.days}</td>
+                                            <td className="reason-cell">{leave.reason}</td>
+                                            <td>
+                                                <span className={`status-badge ${statusBadge.class}`}>
+                                                    {statusBadge.text}
+                                                </span>
+                                            </td>
+                                            <td className="comment-cell">{leave.managerComment || '-'}</td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    )}
+                </div>
             </div>
 
             {/* Kullanıcı Oluşturma Modal */}

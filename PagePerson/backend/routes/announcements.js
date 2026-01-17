@@ -1,6 +1,7 @@
 import express from 'express';
 import { Announcement } from '../models/Announcement.js';
 import { authenticateToken, authorizeRoles } from '../middleware/auth.js';
+import { logAnnouncement } from '../utils/logger.js';
 
 const router = express.Router();
 
@@ -30,6 +31,15 @@ router.post('/', authenticateToken, authorizeRoles('HR', 'SYSTEM_ADMIN'), async 
 
         const newAnnouncement = await Announcement.create(announcementData);
 
+        // Duyuru oluşturma log kaydı
+        await logAnnouncement(
+            'Duyuru oluşturuldu',
+            req.user.userId,
+            req.user.email,
+            req.user.email,
+            `Başlık: ${title}, Hedef: ${targetRoles?.join(', ') || 'Tümü'}, Öncelik: ${priority || 'Normal'}`
+        );
+
         res.status(201).json({
             success: true,
             message: 'Duyuru oluşturuldu',
@@ -52,8 +62,16 @@ router.post('/', authenticateToken, authorizeRoles('HR', 'SYSTEM_ADMIN'), async 
 router.get('/', authenticateToken, async (req, res) => {
     try {
         const userRoles = req.user.roles;
+        console.log('🔍 Duyurular getiriliyor...');
+        console.log('Kullanıcı rolleri:', userRoles);
 
         let announcements = await Announcement.findByUserRoles(userRoles);
+        console.log(`✅ ${announcements.length} duyuru bulundu`);
+
+        announcements.forEach(ann => {
+            console.log(`  - ${ann.announcementId}: "${ann.title}" (targetRoles: ${JSON.stringify(ann.targetRoles)})`);
+        });
+
         announcements = await Announcement.populateCreatorInfo(announcements);
 
         res.json({
@@ -146,6 +164,15 @@ router.put('/:id', authenticateToken, authorizeRoles('HR'), async (req, res) => 
         const success = await Announcement.update(id, updateData);
 
         if (success) {
+            // Duyuru güncelleme log kaydı
+            await logAnnouncement(
+                'Duyuru güncellendi',
+                req.user.userId,
+                req.user.email,
+                req.user.email,
+                `Duyuru ID: ${id}, Güncellenen alanlar: ${Object.keys(updateData).join(', ')}`
+            );
+
             res.json({
                 success: true,
                 message: 'Duyuru güncellendi'
@@ -177,6 +204,15 @@ router.delete('/:id', authenticateToken, authorizeRoles('HR'), async (req, res) 
         const success = await Announcement.delete(id);
 
         if (success) {
+            // Duyuru silme log kaydı
+            await logAnnouncement(
+                'Duyuru silindi',
+                req.user.userId,
+                req.user.email,
+                req.user.email,
+                `Duyuru ID: ${id}`
+            );
+
             res.json({
                 success: true,
                 message: 'Duyuru silindi'

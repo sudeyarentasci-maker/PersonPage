@@ -1,6 +1,7 @@
 import express from 'express';
 import { SystemSettings } from '../models/SystemSettings.js';
 import { authenticateToken, authorizeRoles } from '../middleware/auth.js';
+import { logSettings } from '../utils/logger.js';
 
 const router = express.Router();
 

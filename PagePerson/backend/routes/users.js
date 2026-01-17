@@ -325,6 +325,18 @@ router.put('/me/password', authenticateToken, async (req, res) => {
         const newPasswordHash = await User.hashPassword(newPassword);
         await User.updateByUserId(userId, { passwordHash: newPasswordHash });
 
+        // Şifre değişikliği log kaydı
+        await logUserAction(
+            'Kullanıcı şifresini değiştirdi',
+            {
+                userId: req.user.userId,
+                userName: req.user.email,
+                userEmail: req.user.email
+            },
+            { email: req.user.email },
+            'Kendi şifresini güncelledi'
+        );
+
         res.json({
             success: true,
             message: 'Şifre başarıyla değiştirildi.'
@@ -368,6 +380,7 @@ router.put('/:userId/email', authenticateToken, authorizeRoles('SYSTEM_ADMIN'), 
         }
 
         // Email güncelle
+        const oldUser = await db.collection('users').findOne({ userId });
         const result = await db.collection('users').updateOne(
             { userId },
             {
@@ -384,6 +397,18 @@ router.put('/:userId/email', authenticateToken, authorizeRoles('SYSTEM_ADMIN'), 
                 message: 'Kullanıcı bulunamadı.'
             });
         }
+
+        // Email değişikliği log kaydı
+        await logUserAction(
+            'Kullanıcı email adresi değiştirildi',
+            {
+                userId: req.user.userId,
+                userName: req.user.email,
+                userEmail: req.user.email
+            },
+            { email: oldUser.email },
+            `Eski: ${oldUser.email} → Yeni: ${newEmail}`
+        );
 
         res.json({
             success: true,
@@ -419,6 +444,7 @@ router.put('/:userId/password', authenticateToken, authorizeRoles('SYSTEM_ADMIN'
         const passwordHash = await User.hashPassword(newPassword);
 
         const db = getDatabase();
+        const targetUser = await db.collection('users').findOne({ userId });
         const result = await db.collection('users').updateOne(
             { userId },
             {
@@ -435,6 +461,18 @@ router.put('/:userId/password', authenticateToken, authorizeRoles('SYSTEM_ADMIN'
                 message: 'Kullanıcı bulunamadı.'
             });
         }
+
+        // Admin tarafından şifre değişikliği log kaydı
+        await logUserAction(
+            'Kullanıcı şifresi değiştirildi (Admin)',
+            {
+                userId: req.user.userId,
+                userName: req.user.email,
+                userEmail: req.user.email
+            },
+            { email: targetUser.email },
+            `Admin tarafından şifre sıfırlandı: ${targetUser.email}`
+        );
 
         res.json({
             success: true,
@@ -491,6 +529,18 @@ router.put('/:userId/roles', authenticateToken, authorizeRoles('SYSTEM_ADMIN'), 
 
         await db.collection('user_roles').insertMany(userRoles);
 
+        // Rol değişikliği log kaydı
+        await logUserAction(
+            'Kullanıcı rolleri güncellendi',
+            {
+                userId: req.user.userId,
+                userName: req.user.email,
+                userEmail: req.user.email
+            },
+            { email: 'N/A' },
+            `Kullanıcı ID: ${userId}, Yeni roller: ${roleNames.join(', ')}`
+        );
+
         res.json({
             success: true,
             message: 'Roller başarıyla güncellendi.',
@@ -523,6 +573,7 @@ router.put('/:userId/status', authenticateToken, authorizeRoles('SYSTEM_ADMIN'),
         }
 
         const db = getDatabase();
+        const targetUser = await db.collection('users').findOne({ userId });
         const result = await db.collection('users').updateOne(
             { userId },
             {
@@ -539,6 +590,18 @@ router.put('/:userId/status', authenticateToken, authorizeRoles('SYSTEM_ADMIN'),
                 message: 'Kullanıcı bulunamadı.'
             });
         }
+
+        // Durum değişikliği log kaydı
+        await logUserAction(
+            `Kullanıcı durumu değiştirildi: ${status}`,
+            {
+                userId: req.user.userId,
+                userName: req.user.email,
+                userEmail: req.user.email
+            },
+            { email: targetUser.email },
+            `${targetUser.email} - ${status === 'ACTIVE' ? 'Aktif' : 'Pasif'} yapıldı`
+        );
 
         res.json({
             success: true,
@@ -615,7 +678,11 @@ router.delete('/:userId', authenticateToken, authorizeRoles('SYSTEM_ADMIN'), asy
         });
         console.log(`  ✓ Silindi ${tasksResult.deletedCount} görev`);
 
-        // 6. users - Kullanıcının kendisi
+        // 6. logs - Kullanıcıya ait tüm sistem logları
+        const logsResult = await db.collection('logs').deleteMany({ userId });
+        console.log(`  ✓ Silindi ${logsResult.deletedCount} log kaydı`);
+
+        // 7. users - Kullanıcının kendisi
         await db.collection('users').deleteOne({ userId });
         console.log(`  ✓ Kullanıcı kaydı silindi`);
 
@@ -630,7 +697,7 @@ router.delete('/:userId', authenticateToken, authorizeRoles('SYSTEM_ADMIN'), asy
                 userEmail: req.user.email
             },
             { email: user.email },
-            `${user.email} - Silinen veriler: ${leavesResult.deletedCount} izin, ${announcementsResult.deletedCount} duyuru, ${tasksResult.deletedCount} görev`
+            `${user.email} - Silinen veriler: ${leavesResult.deletedCount} izin, ${announcementsResult.deletedCount} duyuru, ${tasksResult.deletedCount} görev, ${logsResult.deletedCount} log`
         );
 
         res.json({
@@ -644,7 +711,8 @@ router.delete('/:userId', authenticateToken, authorizeRoles('SYSTEM_ADMIN'), asy
                     managerRelations: managerResult.deletedCount,
                     leaves: leavesResult.deletedCount,
                     announcements: announcementsResult.deletedCount,
-                    tasks: tasksResult.deletedCount
+                    tasks: tasksResult.deletedCount,
+                    logs: logsResult.deletedCount
                 }
             }
         });

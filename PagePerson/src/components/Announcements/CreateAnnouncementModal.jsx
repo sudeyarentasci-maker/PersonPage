@@ -18,6 +18,36 @@ function CreateAnnouncementModal({ isOpen, onClose, onAnnouncementCreated }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+
+        // Validasyon
+        if (!formData.title.trim()) {
+            setError('Lütfen duyuru başlığı girin');
+            return;
+        }
+
+        if (!formData.content.trim()) {
+            setError('Lütfen duyuru içeriği girin');
+            return;
+        }
+
+        if (!formData.expiresAt) {
+            setError('⚠️ Lütfen duyuru için son geçerlilik tarihi ve saati seçin!');
+            return;
+        }
+
+        // Seçilen tarihin geçmişte olup olmadığını kontrol et
+        const selectedDate = new Date(formData.expiresAt);
+        const now = new Date();
+        if (selectedDate <= now) {
+            setError('⚠️ Son geçerlilik tarihi gelecekte bir tarih olmalıdır!');
+            return;
+        }
+
+        if (formData.targetRoles.length === 0) {
+            setError('En az bir rol seçmelisiniz');
+            return;
+        }
+
         setIsLoading(true);
 
         try {
@@ -122,14 +152,18 @@ function CreateAnnouncementModal({ isOpen, onClose, onAnnouncementCreated }) {
                         </div>
 
                         <div className="form-group">
-                            <label>Son Geçerlilik (Opsiyonel)</label>
+                            <label>Son Geçerlilik Tarihi ve Saati *</label>
                             <input
                                 type="datetime-local"
                                 value={formData.expiresAt}
                                 onChange={(e) => setFormData({ ...formData, expiresAt: e.target.value })}
                                 min={new Date().toISOString().slice(0, 16)}
+                                required
                                 disabled={isLoading}
                             />
+                            <small style={{ color: '#666', fontSize: '12px' }}>
+                                Duyuru bu tarihe kadar görünür olacaktır
+                            </small>
                         </div>
                     </div>
 

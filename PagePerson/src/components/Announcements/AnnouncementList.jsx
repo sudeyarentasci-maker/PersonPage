@@ -22,7 +22,10 @@ function AnnouncementList() {
     const fetchAnnouncements = async () => {
         try {
             const result = await getAnnouncements();
+            console.log('📡 API Yanıtı:', result);
+
             if (result.success) {
+                console.log(`✅ ${result.data.announcements.length} duyuru geldi`);
                 const sortedAnnouncements = result.data.announcements.sort((a, b) => {
                     const priorityOrder = { 'HIGH': 3, 'NORMAL': 2, 'LOW': 1 };
                     const priorityDiff = priorityOrder[b.priority] - priorityOrder[a.priority];
