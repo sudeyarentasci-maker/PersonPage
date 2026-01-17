@@ -661,8 +661,8 @@ router.delete('/:userId', authenticateToken, authorizeRoles('SYSTEM_ADMIN'), asy
         });
         console.log(`  ✓ Silindi ${managerResult.deletedCount} yönetici ilişkisi`);
 
-        // 3. leaves - Kullanıcının tüm izin talepleri
-        const leavesResult = await db.collection('leaves').deleteMany({ userId });
+        // 3. leave_requests - Kullanıcının tüm izin talepleri
+        const leavesResult = await db.collection('leave_requests').deleteMany({ userId });
         console.log(`  ✓ Silindi ${leavesResult.deletedCount} izin talebi`);
 
         // 4. announcements - Kullanıcının oluşturduğu duyurular
