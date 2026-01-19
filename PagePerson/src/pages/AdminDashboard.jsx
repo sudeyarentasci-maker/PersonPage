@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
-import CreateUserModal from '../components/UserManagement/CreateUserModal';
 import UserList from '../components/UserManagement/UserList';
 import AnnouncementList from '../components/Announcements/AnnouncementList';
 import DashboardWidgets from '../components/Dashboard/DashboardWidgets';
@@ -16,10 +15,8 @@ import './LeaveDashboard.css';
 function AdminDashboard() {
     const navigate = useNavigate();
     const { user, logout, loading: authLoading } = useAuth();
-    const [isUserModalOpen, setIsUserModalOpen] = useState(false);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [isLogsOpen, setIsLogsOpen] = useState(false);
-    const [refreshTrigger, setRefreshTrigger] = useState(0);
     const [allLeaves, setAllLeaves] = useState([]);
     const [leaveFilter, setLeaveFilter] = useState('ALL'); // ALL, PENDING, APPROVED, REJECTED
     const [totalUsers, setTotalUsers] = useState(0);
@@ -28,10 +25,6 @@ function AdminDashboard() {
         fetchAllLeaves();
         fetchTotalUsers();
     }, [leaveFilter]);
-
-    useEffect(() => {
-        fetchTotalUsers();
-    }, [refreshTrigger]);
 
     const fetchAllLeaves = async () => {
         try {
@@ -75,15 +68,8 @@ function AdminDashboard() {
         return types[type] || type;
     };
 
-    const handleUserCreated = (userData) => {
-        console.log('Yeni kullanıcı oluşturuldu:', userData);
-        setRefreshTrigger(prev => prev + 1);
-    };
-
     const handleSectionClick = (section) => {
-        if (section === 'users') {
-            setIsUserModalOpen(true);
-        } else if (section === 'roles') {
+        if (section === 'roles') {
             alert('🎭 Rol Yönetimi\n\nBu özellik yakında eklenecek!\n\n- Rol oluşturma\n- Yetki atama\n- Rol düzenleme');
         } else if (section === 'settings') {
             setIsSettingsOpen(true);
@@ -158,19 +144,6 @@ function AdminDashboard() {
 
                 <div className="features-grid">
                     <div className="feature-card">
-                        <h3>👤 Kullanıcı Yönetimi</h3>
-                        <p>HR dahil tüm kullanıcıları yönet</p>
-                        <button
-                            className="feature-btn"
-                            onClick={() => handleSectionClick('users')}
-                        >
-                            👤 Kullanıcıları Yönet
-                        </button>
-                    </div>
-
-
-
-                    <div className="feature-card">
                         <h3>⚙️ Sistem Ayarları</h3>
                         <p>Genel sistem yapılandırması</p>
                         <button
@@ -200,8 +173,7 @@ function AdminDashboard() {
                 <AnnouncementList />
 
                 {/* Kullanıcı Listesi */}
-                <UserList 
-                    refreshTrigger={refreshTrigger} 
+                <UserList
                     onUsersUpdated={(users) => {
                         setTotalUsers(users.length);
                     }}
@@ -280,13 +252,6 @@ function AdminDashboard() {
                     )}
                 </div>
             </div>
-
-            {/* Kullanıcı Oluşturma Modal */}
-            <CreateUserModal
-                isOpen={isUserModalOpen}
-                onClose={() => setIsUserModalOpen(false)}
-                onUserCreated={handleUserCreated}
-            />
 
             {/* Sistem Ayarları Modal */}
             <SystemSettings

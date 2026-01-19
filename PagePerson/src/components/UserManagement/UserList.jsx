@@ -19,10 +19,13 @@ function UserList({ refreshTrigger, onUsersUpdated }) {
     const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
     const [isRolesModalOpen, setIsRolesModalOpen] = useState(false);
 
-    // SYSTEM_ADMIN kontrolü
-    const isSystemAdmin = user?.roles?.some(role =>
-        typeof role === 'string' ? role === 'SYSTEM_ADMIN' : role.name === 'SYSTEM_ADMIN'
+    // Sadece HR kontrolü - Kullanıcı yönetimi artık sadece HR'ın sorumluluğunda
+    const isHR = user?.roles?.some(role =>
+        typeof role === 'string' ? role === 'HR' : role.name === 'HR'
     );
+
+    // Kullanıcı yönetimi yetkisi - Sadece HR
+    const canManageUsers = isHR;
 
     const fetchUsers = async () => {
         setIsLoading(true);
@@ -130,7 +133,7 @@ function UserList({ refreshTrigger, onUsersUpdated }) {
                                 <th>Email</th>
                                 <th>Roller</th>
                                 <th>Durum</th>
-                                {isSystemAdmin && <th>İşlemler</th>}
+                                {canManageUsers && <th>İşlemler</th>}
                             </tr>
                         </thead>
                         <tbody>
@@ -160,7 +163,7 @@ function UserList({ refreshTrigger, onUsersUpdated }) {
                                             {u.status === 'INACTIVE' ? 'Deaktif' : 'Aktif'}
                                         </span>
                                     </td>
-                                    {isSystemAdmin && (
+                                    {canManageUsers && (
                                         <td>
                                             <UserActionsDropdown
                                                 user={u}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
+import CreateUserModal from '../components/UserManagement/CreateUserModal';
 import UserList from '../components/UserManagement/UserList';
 import AnnouncementManagement from '../components/Announcements/AnnouncementManagement';
 import AnnouncementList from '../components/Announcements/AnnouncementList';
@@ -14,6 +15,7 @@ import './HrDashboard.css';
 function HrDashboard() {
     const navigate = useNavigate();
     const { user, logout, loading: authLoading } = useAuth();
+    const [isUserModalOpen, setIsUserModalOpen] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
     const [allLeaves, setAllLeaves] = useState([]);
     const [leaveFilter, setLeaveFilter] = useState('ALL'); // ALL, PENDING, APPROVED, REJECTED
@@ -54,6 +56,11 @@ function HrDashboard() {
 
     const handleAnnouncementCreated = () => {
         setAnnouncementRefresh(prev => prev + 1);
+    };
+
+    const handleUserCreated = (userData) => {
+        console.log('Yeni kullanıcı oluşturuldu:', userData);
+        setRefreshTrigger(prev => prev + 1);
     };
 
     const getStatusBadge = (status) => {
@@ -149,6 +156,17 @@ function HrDashboard() {
 
                 <div className="features-grid">
                     <div className="feature-card">
+                        <h3>👤 Kullanıcı Yönetimi</h3>
+                        <p>Çalışanları yönet ve yeni kullanıcı ekle</p>
+                        <button
+                            className="feature-btn"
+                            onClick={() => setIsUserModalOpen(true)}
+                        >
+                            👤 Kullanıcıları Yönet
+                        </button>
+                    </div>
+
+                    <div className="feature-card">
                         <h3>📋 İzin Yönetimi</h3>
                         <p>Tüm şirket izinlerini görüntüle ve yönet</p>
                         <button
@@ -163,12 +181,6 @@ function HrDashboard() {
                         <h3>📢 Duyuru Yönetimi</h3>
                         <p>Şirket duyuruları oluştur ve yönet</p>
                         <AnnouncementManagement onAnnouncementCreated={handleAnnouncementCreated} />
-                    </div>
-
-                    <div className="feature-card">
-                        <h3>📊 Raporlar</h3>
-                        <p>Şirket geneli raporları görüntüle</p>
-                        <button className="feature-btn">Yakında</button>
                     </div>
                 </div>
 
@@ -256,6 +268,13 @@ function HrDashboard() {
                     )}
                 </div>
             </div>
+
+            {/* Kullanıcı Oluşturma Modal */}
+            <CreateUserModal
+                isOpen={isUserModalOpen}
+                onClose={() => setIsUserModalOpen(false)}
+                onUserCreated={handleUserCreated}
+            />
         </div>
     );
 }

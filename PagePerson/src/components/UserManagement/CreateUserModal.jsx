@@ -34,6 +34,17 @@ function CreateUserModal({ isOpen, onClose, onUserCreated }) {
         }
     }, [isOpen]);
 
+    // Manager otomatik seçimi
+    useEffect(() => {
+        if (users.length > 0 && selectedRoles.includes('EMPLOYEE') && !manager) {
+            const managers = users.filter(u => u.roles.includes('MANAGER'));
+            if (managers.length > 0) {
+                // Eğer manager varsa ilk manager'ı otomatik seç
+                setManager(managers[0].userId);
+            }
+        }
+    }, [users, selectedRoles]);
+
     const fetchUsers = async () => {
         try {
             const result = await getAllUsers();
@@ -65,6 +76,13 @@ function CreateUserModal({ isOpen, onClose, onUserCreated }) {
 
         if (selectedRoles.length === 0) {
             setError('En az bir rol seçmelisiniz.');
+            setIsLoading(false);
+            return;
+        }
+
+        // EMPLOYEE rolü seçiliyse manager zorunlu
+        if (selectedRoles.includes('EMPLOYEE') && !manager) {
+            setError('Çalışan rolü seçildiğinde yönetici seçimi zorunludur.');
             setIsLoading(false);
             return;
         }
@@ -142,8 +160,13 @@ function CreateUserModal({ isOpen, onClose, onUserCreated }) {
     if (!isOpen) return null;
 
     return ReactDOM.createPortal(
-        <div className="modal-overlay" onClick={handleClose}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-overlay" onMouseDown={(e) => {
+            // Sadece overlay'e doğrudan tıklanırsa kapat
+            if (e.target === e.currentTarget) {
+                handleClose();
+            }
+        }}>
+            <div className="modal-content">
                 <div className="modal-header">
                     <h2>👤 Yeni Kullanıcı Oluştur</h2>
                     <button className="close-btn" onClick={handleClose}>×</button>
@@ -222,13 +245,13 @@ function CreateUserModal({ isOpen, onClose, onUserCreated }) {
                         {/* Yönetici alanı sadece EMPLOYEE rolü seçildiğinde göster */}
                         {selectedRoles.includes('EMPLOYEE') && (
                             <div className="form-group">
-                                <label>Yönetici</label>
+                                <label>Yönetici (Zorunlu)</label>
                                 <select
                                     value={manager}
                                     onChange={(e) => setManager(e.target.value)}
                                     disabled={isLoading}
+                                    required
                                 >
-                                    <option value="">Yönetici Seç (Opsiyonel)</option>
                                     {users.filter(u => u.roles.includes('MANAGER')).map((user) => (
                                         <option key={user.userId} value={user.userId}>
                                             {user.firstName && user.lastName

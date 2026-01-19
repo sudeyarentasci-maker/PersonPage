@@ -10,9 +10,9 @@ const router = express.Router();
 
 /**
  * POST /api/users
- * Yeni kullanıcı oluştur (SADECE SYSTEM_ADMIN)
+ * Yeni kullanıcı oluştur (SADECE HR)
  */
-router.post('/', authenticateToken, authorizeRoles('SYSTEM_ADMIN'), async (req, res) => {
+router.post('/', authenticateToken, authorizeRoles('HR'), async (req, res) => {
     try {
         const { email, roleNames, firstName, lastName, manager, startDate, birthDate, title, address, phoneNumber } = req.body;
 
@@ -354,9 +354,9 @@ router.put('/me/password', authenticateToken, async (req, res) => {
 
 /**
  * PUT /api/users/:userId/email
- * Kullanıcının email'ini değiştir (SADECE SYSTEM_ADMIN)
+ * Kullanıcının email'ini değiştir (SADECE HR)
  */
-router.put('/:userId/email', authenticateToken, authorizeRoles('SYSTEM_ADMIN'), async (req, res) => {
+router.put('/:userId/email', authenticateToken, authorizeRoles('HR'), async (req, res) => {
     try {
         const { userId } = req.params;
         const { newEmail } = req.body;
@@ -426,9 +426,9 @@ router.put('/:userId/email', authenticateToken, authorizeRoles('SYSTEM_ADMIN'), 
 
 /**
  * PUT /api/users/:userId/password
- * Kullanıcının şifresini değiştir (SADECE SYSTEM_ADMIN)
+ * Kullanıcının şifresini değiştir (SADECE HR)
  */
-router.put('/:userId/password', authenticateToken, authorizeRoles('SYSTEM_ADMIN'), async (req, res) => {
+router.put('/:userId/password', authenticateToken, authorizeRoles('HR'), async (req, res) => {
     try {
         const { userId } = req.params;
         const { newPassword } = req.body;
@@ -490,9 +490,9 @@ router.put('/:userId/password', authenticateToken, authorizeRoles('SYSTEM_ADMIN'
 
 /**
  * PUT /api/users/:userId/roles
- * Kullanıcının rollerini değiştir (SADECE SYSTEM_ADMIN)
+ * Kullanıcının rollerini değiştir (SADECE HR)
  */
-router.put('/:userId/roles', authenticateToken, authorizeRoles('SYSTEM_ADMIN'), async (req, res) => {
+router.put('/:userId/roles', authenticateToken, authorizeRoles('HR'), async (req, res) => {
     try {
         const { userId } = req.params;
         const { roleNames } = req.body;
@@ -558,9 +558,9 @@ router.put('/:userId/roles', authenticateToken, authorizeRoles('SYSTEM_ADMIN'), 
 
 /**
  * PUT /api/users/:userId/status
- * Kullanıcı durumunu değiştir (active/inactive) (SADECE SYSTEM_ADMIN)
+ * Kullanıcı durumunu değiştir (active/inactive) (SADECE HR)
  */
-router.put('/:userId/status', authenticateToken, authorizeRoles('SYSTEM_ADMIN'), async (req, res) => {
+router.put('/:userId/status', authenticateToken, authorizeRoles('HR'), async (req, res) => {
     try {
         const { userId } = req.params;
         const { status } = req.body;
@@ -619,10 +619,10 @@ router.put('/:userId/status', authenticateToken, authorizeRoles('SYSTEM_ADMIN'),
 
 /**
  * DELETE /api/users/:userId
- * Kullanıcıyı tamamen sil (SADECE SYSTEM_ADMIN)
+ * Kullanıcıyı tamamen sil (SADECE HR)
  * CASCADE DELETE: Kullanıcıya ait tüm veriler silinir
  */
-router.delete('/:userId', authenticateToken, authorizeRoles('SYSTEM_ADMIN'), async (req, res) => {
+router.delete('/:userId', authenticateToken, authorizeRoles('HR'), async (req, res) => {
     try {
         const { userId } = req.params;
 
