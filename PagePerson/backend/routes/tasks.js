@@ -105,13 +105,24 @@ router.post('/tasks', authenticateToken, async (req, res) => {
 
 router.put('/tasks/:id', authenticateToken, async (req, res) => {
     try {
-        // Only managers can update tasks
-        if (req.user.role !== 'MANAGER') {
-            return res.status(403).json({ success: false, message: 'Yalnızca manager\'lar görev düzenleyebilir' });
+        // Managers can update everything
+        if (req.user.role === 'MANAGER') {
+            const updated = await Task.update(req.params.id, req.body);
+            return res.json({ success: true, data: updated });
         }
 
-        const updated = await Task.update(req.params.id, req.body);
-        res.json({ success: true, data: updated });
+        // Employees can only update sectionId (status/column)
+        if (req.user.role === 'EMPLOYEE') {
+            // Only allow sectionId to be updated
+            const allowedUpdate = {
+                sectionId: req.body.sectionId
+            };
+            const updated = await Task.update(req.params.id, allowedUpdate);
+            return res.json({ success: true, data: updated });
+        }
+
+        // Other roles are not allowed
+        return res.status(403).json({ success: false, message: 'Bu işlem için yetkiniz yok' });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }

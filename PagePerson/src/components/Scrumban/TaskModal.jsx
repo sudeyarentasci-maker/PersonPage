@@ -90,6 +90,7 @@ function TaskModal({ task, sections, onClose, onSave, onDelete }) {
                                 placeholder="Göreviniz için açıklayıcı bir başlık girin..."
                                 required
                                 autoFocus
+                                disabled={user?.primaryRole === 'EMPLOYEE'}
                             />
                         </div>
 
@@ -140,6 +141,7 @@ function TaskModal({ task, sections, onClose, onSave, onDelete }) {
                                     className="form-input"
                                     value={formData.priority}
                                     onChange={handleChange}
+                                    disabled={user?.primaryRole === 'EMPLOYEE'}
                                 >
                                     <option value="low">Düşük</option>
                                     <option value="medium">Orta</option>
@@ -157,6 +159,7 @@ function TaskModal({ task, sections, onClose, onSave, onDelete }) {
                                 value={formData.description}
                                 onChange={handleChange}
                                 placeholder="Detaylı açıklama ekleyin..."
+                                disabled={user?.primaryRole === 'EMPLOYEE'}
                             />
                         </div>
 
@@ -169,6 +172,7 @@ function TaskModal({ task, sections, onClose, onSave, onDelete }) {
                                     className="form-input"
                                     value={formData.dueDate}
                                     onChange={handleChange}
+                                    disabled={user?.primaryRole === 'EMPLOYEE'}
                                 />
                             </div>
                             <div className="form-group" style={{ flex: 1 }}>
@@ -179,13 +183,14 @@ function TaskModal({ task, sections, onClose, onSave, onDelete }) {
                                     value={formData.tags}
                                     onChange={handleChange}
                                     placeholder="Örn: Dev, Bug, UI, Feature (virgülle ayırın)"
+                                    disabled={user?.primaryRole === 'EMPLOYEE'}
                                 />
                             </div>
                         </div>
                     </div>
 
                     <div className="scrumban-modal-footer">
-                        {task && (
+                        {task && user?.primaryRole === 'MANAGER' && (
                             <button
                                 type="button"
                                 className="btn-cancel"
