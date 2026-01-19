@@ -7,7 +7,7 @@ import ChangePasswordModal from './ChangePasswordModal';
 import ChangeRolesModal from './ChangeRolesModal';
 import './UserManagement.css';
 
-function UserList({ refreshTrigger }) {
+function UserList({ refreshTrigger, onUsersUpdated }) {
     const { user } = useAuth();
     const [users, setUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -32,6 +32,10 @@ function UserList({ refreshTrigger }) {
             const result = await getAllUsers();
             if (result.success) {
                 setUsers(result.data.users);
+                // Kullanıcı listesi güncellendiğinde parent component'i bilgilendir
+                if (onUsersUpdated) {
+                    onUsersUpdated(result.data.users);
+                }
             }
         } catch (err) {
             setError(err.response?.data?.message || 'Kullanıcılar yüklenemedi');

@@ -11,7 +11,7 @@ import './ManagerDashboard.css';
 
 function ManagerDashboard() {
     const navigate = useNavigate();
-    const { user, logout } = useAuth();
+    const { user, logout, loading: authLoading } = useAuth();
     const [pendingLeaves, setPendingLeaves] = useState([]);
     const [allTeamLeaves, setAllTeamLeaves] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -120,7 +120,9 @@ function ManagerDashboard() {
             <div className="dashboard-content">
                 <div className="welcome-section">
                     <h2>
-                        {user?.firstName ? (
+                        {authLoading ? (
+                            'Hoşgeldiniz!'
+                        ) : user?.firstName ? (
                             <>Hoşgeldin {user.firstName}!</>
                         ) : (
                             'Hoşgeldiniz!'

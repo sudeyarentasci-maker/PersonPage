@@ -10,7 +10,7 @@ import './LeaveDashboard.css';
 
 function EmployeeDashboard() {
     const navigate = useNavigate();
-    const { user, logout } = useAuth();
+    const { user, logout, loading: authLoading } = useAuth();
     const [leaves, setLeaves] = useState([]);
     const [stats, setStats] = useState(null);
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -116,7 +116,9 @@ function EmployeeDashboard() {
             <div className="dashboard-content">
                 <div className="welcome-section">
                     <h2>
-                        {user?.firstName ? (
+                        {authLoading ? (
+                            'Hoşgeldiniz!'
+                        ) : user?.firstName ? (
                             <>Hoşgeldin {user.firstName}!</>
                         ) : (
                             'Hoşgeldiniz!'

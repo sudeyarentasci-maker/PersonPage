@@ -8,23 +8,30 @@ import DashboardWidgets from '../components/Dashboard/DashboardWidgets';
 import SystemSettings from './SystemSettings';
 import SystemLogs from './SystemLogs';
 import { getAllLeaves } from '../services/leaveService';
+import { getAllUsers } from '../services/userService';
 import logo from '../../assets/logo.png';
 import './Dashboard.css';
 import './LeaveDashboard.css';
 
 function AdminDashboard() {
     const navigate = useNavigate();
-    const { user, logout } = useAuth();
+    const { user, logout, loading: authLoading } = useAuth();
     const [isUserModalOpen, setIsUserModalOpen] = useState(false);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [isLogsOpen, setIsLogsOpen] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
     const [allLeaves, setAllLeaves] = useState([]);
     const [leaveFilter, setLeaveFilter] = useState('ALL'); // ALL, PENDING, APPROVED, REJECTED
+    const [totalUsers, setTotalUsers] = useState(0);
 
     useEffect(() => {
         fetchAllLeaves();
+        fetchTotalUsers();
     }, [leaveFilter]);
+
+    useEffect(() => {
+        fetchTotalUsers();
+    }, [refreshTrigger]);
 
     const fetchAllLeaves = async () => {
         try {
@@ -35,6 +42,17 @@ function AdminDashboard() {
             }
         } catch (err) {
             console.error('İzinler yüklenemedi:', err);
+        }
+    };
+
+    const fetchTotalUsers = async () => {
+        try {
+            const result = await getAllUsers();
+            if (result.success) {
+                setTotalUsers(result.data.users.length);
+            }
+        } catch (err) {
+            console.error('Kullanıcılar yüklenemedi:', err);
         }
     };
 
@@ -93,7 +111,9 @@ function AdminDashboard() {
             <div className="dashboard-content">
                 <div className="welcome-section">
                     <h2>
-                        {user?.firstName ? (
+                        {authLoading ? (
+                            'Hoşgeldiniz!'
+                        ) : user?.firstName ? (
                             <>Hoşgeldin {user.firstName}!</>
                         ) : (
                             'Hoşgeldiniz!'
@@ -107,7 +127,7 @@ function AdminDashboard() {
                         <div className="stat-icon">👥</div>
                         <div className="stat-info">
                             <h3>Toplam Kullanıcı</h3>
-                            <p className="stat-number">5</p>
+                            <p className="stat-number">{totalUsers}</p>
                         </div>
                     </div>
 
@@ -180,7 +200,12 @@ function AdminDashboard() {
                 <AnnouncementList />
 
                 {/* Kullanıcı Listesi */}
-                <UserList refreshTrigger={refreshTrigger} />
+                <UserList 
+                    refreshTrigger={refreshTrigger} 
+                    onUsersUpdated={(users) => {
+                        setTotalUsers(users.length);
+                    }}
+                />
 
                 {/* İzinListesi */}
                 <div id="leave-section" className="leave-list-section">

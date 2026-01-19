@@ -59,7 +59,8 @@ export const AuthProvider = ({ children }) => {
 
             if (token) {
                 try {
-                    const response = await api.get('/auth/me');
+                    // /users/me endpoint'i firstName ve lastName bilgilerini de döndürüyor
+                    const response = await api.get('/users/me');
                     if (response.data.success) {
                         setUser(response.data.data.user);
                     }

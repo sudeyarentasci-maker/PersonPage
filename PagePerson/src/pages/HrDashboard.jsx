@@ -5,6 +5,7 @@ import UserList from '../components/UserManagement/UserList';
 import AnnouncementManagement from '../components/Announcements/AnnouncementManagement';
 import AnnouncementList from '../components/Announcements/AnnouncementList';
 import { getAllLeaves } from '../services/leaveService';
+import { getAllUsers } from '../services/userService';
 import logo from '../../assets/logo.png';
 import './Dashboard.css';
 import './LeaveDashboard.css';
@@ -12,15 +13,21 @@ import './HrDashboard.css';
 
 function HrDashboard() {
     const navigate = useNavigate();
-    const { user, logout } = useAuth();
+    const { user, logout, loading: authLoading } = useAuth();
     const [refreshTrigger, setRefreshTrigger] = useState(0);
     const [allLeaves, setAllLeaves] = useState([]);
     const [leaveFilter, setLeaveFilter] = useState('ALL'); // ALL, PENDING, APPROVED, REJECTED
     const [announcementRefresh, setAnnouncementRefresh] = useState(0);
+    const [totalUsers, setTotalUsers] = useState(0);
 
     useEffect(() => {
         fetchAllLeaves();
+        fetchTotalUsers();
     }, [leaveFilter]);
+
+    useEffect(() => {
+        fetchTotalUsers();
+    }, [refreshTrigger]);
 
     const fetchAllLeaves = async () => {
         try {
@@ -31,6 +38,17 @@ function HrDashboard() {
             }
         } catch (err) {
             console.error('İzinler yüklenemedi:', err);
+        }
+    };
+
+    const fetchTotalUsers = async () => {
+        try {
+            const result = await getAllUsers();
+            if (result.success) {
+                setTotalUsers(result.data.users.length);
+            }
+        } catch (err) {
+            console.error('Kullanıcılar yüklenemedi:', err);
         }
     };
 
@@ -76,7 +94,9 @@ function HrDashboard() {
             <div className="dashboard-content">
                 <div className="welcome-section">
                     <h2>
-                        {user?.firstName ? (
+                        {authLoading ? (
+                            'Hoşgeldiniz!'
+                        ) : user?.firstName ? (
                             <>Hoşgeldin {user.firstName}!</>
                         ) : (
                             'Hoşgeldiniz!'
@@ -90,7 +110,7 @@ function HrDashboard() {
                         <div className="stat-icon">👥</div>
                         <div className="stat-info">
                             <h3>Toplam Çalışan</h3>
-                            <p className="stat-number">5</p>
+                            <p className="stat-number">{totalUsers}</p>
                         </div>
                     </div>
 
@@ -156,7 +176,12 @@ function HrDashboard() {
                 <AnnouncementList key={announcementRefresh} />
 
                 {/* Kullanıcı Listesi */}
-                <UserList refreshTrigger={refreshTrigger} />
+                <UserList 
+                    refreshTrigger={refreshTrigger} 
+                    onUsersUpdated={(users) => {
+                        setTotalUsers(users.length);
+                    }}
+                />
 
                 {/* İzin Listesi */}
                 <div id="leave-section" className="leave-list-section">
