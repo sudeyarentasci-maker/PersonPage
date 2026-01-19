@@ -29,6 +29,8 @@ class Task {
                 description: taskData.description || '',
                 sectionId: sectionId,
                 assigneeId: assigneeId,
+                assignedTo: taskData.assignedTo || null, // Employee userId assigned to this task
+                assignedBy: createdBy, // Manager userId who assigned the task
                 priority: taskData.priority || 'medium',
                 dueDate: taskData.dueDate ? new Date(taskData.dueDate) : null,
                 tags: taskData.tags || [],
@@ -121,6 +123,35 @@ class Task {
     static async delete(id) {
         const db = getDatabase();
         return await db.collection('tasks').deleteOne({ _id: new ObjectId(id) });
+    }
+
+    // Find tasks assigned to a specific employee
+    static async findByAssignee(userId) {
+        const db = getDatabase();
+        return await db.collection('tasks')
+            .find({ assignedTo: userId })
+            .sort({ order: 1 })
+            .toArray();
+    }
+
+    // Count pending (not completed) tasks for an employee
+    static async countPendingByAssignee(userId) {
+        const db = getDatabase();
+        const sections = await db.collection('sections').find().toArray();
+
+        // Find the "Tamamlandı" section ID
+        const completedSection = sections.find(s =>
+            s.title.toLowerCase().includes('tamamlan')
+        );
+
+        const query = { assignedTo: userId };
+
+        // Exclude completed tasks
+        if (completedSection) {
+            query.sectionId = { $ne: completedSection._id };
+        }
+
+        return await db.collection('tasks').countDocuments(query);
     }
 }
 

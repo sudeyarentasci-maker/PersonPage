@@ -159,41 +159,50 @@
     cursor: grabbing;
 }
 
-/* Priority Backgrounds */
-.task-priority-high {
-    background-color: #fff1f2;
-    /* Very light red */
-    border-left: 4px solid #fecdd3;
+/* Column-Based Card Backgrounds */
+
+/* Yapılacaklar - Light Blue */
+.board-column.column-todo .task-card {
+    background-color: #dbeafe !important;
+    /* Light blue background */
+    border-left: 4px solid #60A5FA;
 }
 
-.task-priority-medium {
-    background-color: #fffbeb;
-    /* Very light amber/yellow */
-    border-left: 4px solid #fde68a;
+.board-column.column-todo .task-card:hover {
+    background-color: #bfdbfe;
 }
 
-.task-priority-low {
-    background-color: #f0fdf4;
-    /* Very light green */
-    border-left: 4px solid #bbf7d0;
+/* Sürüyor - Orange */
+.board-column.column-progress .task-card {
+    background-color: #fef3c7 !important;
+    /* Light orange background */
+    border-left: 4px solid #F59E0B;
 }
 
-.task-priority-high:hover {
-    background-color: #ffe4e6;
+.board-column.column-progress .task-card:hover {
+    background-color: #fde68a;
 }
 
-/* Force Green for Completed Tasks */
+/* İnceleme - Yellow */
+.board-column.column-review .task-card {
+    background-color: #fef9c3 !important;
+    /* Light yellow background */
+    border-left: 4px solid #FACC15;
+}
+
+.board-column.column-review .task-card:hover {
+    background-color: #fef08a;
+}
+
+/* Tamamlanan - Green */
 .board-column.column-done .task-card {
-    background-color: #f0fdf4 !important;
-    /* Force Green bg */
-    border-left-color: #22c55e !important;
-    /* Force Green border */
-    opacity: 0.8;
-    /* Slight transparency to indicate done */
+    background-color: #dcfce7 !important;
+    /* Light green background */
+    border-left: 4px solid #22C55E;
 }
 
 .board-column.column-done .task-card:hover {
-    opacity: 1;
+    background-color: #bbf7d0;
 }
 
 .task-card-header {
@@ -216,7 +225,7 @@
     text-transform: uppercase;
 }
 
-/* Tag Colors */
+/* Tag Colors - Priority affects only tag text color, not card background */
 .tag-high {
     background-color: #fee2e2;
     color: #dc2626;
@@ -228,8 +237,10 @@
 }
 
 .tag-low {
-    background-color: #dcfce7;
-    color: #16a34a;
+    background-color: #dbeafe;
+    /* Light blue background for low priority */
+    color: #60A5FA;
+    /* Light blue text for low priority */
 }
 
 .tag-design {
@@ -283,6 +294,19 @@
     color: #6b7280;
     border: 1px solid white;
     font-weight: 600;
+    flex-shrink: 0;
+}
+
+.task-assignee-container {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.task-assignee-name {
+    font-size: 11px;
+    color: #6b7280;
+    font-weight: 500;
 }
 
 .task-meta {
@@ -393,4 +417,142 @@
 
 .btn-primary:hover {
     background: #d95353;
+}
+
+/* Form Styling */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 8px;
+    letter-spacing: 0.01em;
+}
+
+.form-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    color: #1f2937;
+    background-color: #f9fafb;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #f06a6a;
+    box-shadow: 0 0 0 3px rgba(240, 106, 106, 0.1);
+    background-color: #f9fafb;
+}
+
+.form-input:hover:not(:focus) {
+    border-color: #d1d5db;
+}
+
+.form-input::placeholder {
+    color: #9ca3af;
+    font-size: 13px;
+}
+
+/* Textarea specific */
+textarea.form-input {
+    resize: vertical;
+    min-height: 80px;
+    line-height: 1.5;
+}
+
+/* Select specific */
+select.form-input {
+    cursor: pointer;
+    appearance: none;
+    background-color: #f9fafb;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 20px;
+    padding-right: 36px;
+}
+
+select.form-input:focus {
+    background-color: #f9fafb;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23f06a6a' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 20px;
+}
+
+/* Remove background from option elements */
+select.form-input option {
+    background-color: white;
+    background-image: none;
+    padding: 8px 12px;
+}
+
+/* Date input specific */
+input[type="date"].form-input {
+    cursor: pointer;
+    background-color: #f9fafb;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+/* Calendar icon for date input */
+input[type="date"].form-input::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+input[type="date"].form-input::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+}
+
+/* Form Row for side-by-side inputs */
+.form-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.form-row .form-group {
+    margin-bottom: 0;
+}
+
+/* Input states */
+.form-input:disabled {
+    background-color: #f9fafb;
+    color: #9ca3af;
+    cursor: not-allowed;
+    border-color: #e5e7eb;
+}
+
+.form-input.error {
+    border-color: #ef4444;
+}
+
+.form-input.error:focus {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Better button styling */
+.btn-cancel:hover {
+    background-color: #f9fafb;
+    border-color: #9ca3af;
+}
+
+.btn-cancel:active {
+    transform: scale(0.98);
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
 }

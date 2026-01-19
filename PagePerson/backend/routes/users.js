@@ -179,6 +179,7 @@ router.get('/me', authenticateToken, async (req, res) => {
         }
 
         const roles = await User.getUserRoles(userId);
+        const primaryRole = await User.getPrimaryRole(userId);
 
         // Get manager info from employee_manager collection
         const db = getDatabase();
@@ -207,6 +208,7 @@ router.get('/me', authenticateToken, async (req, res) => {
                     firstName: user.firstName,
                     lastName: user.lastName,
                     status: user.status,
+                    primaryRole: primaryRole?.name,
                     manager: user.manager,
                     managerInfo: managerInfo,
                     startDate: user.startDate,

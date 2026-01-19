@@ -19,14 +19,18 @@ import Column from '../components/Scrumban/Column';
 import TaskCard from '../components/Scrumban/TaskCard';
 import TaskModal from '../components/Scrumban/TaskModal';
 import { getSections, moveTask, createTask, updateTask, deleteTask } from '../services/taskService';
+import { useAuth } from '../auth/AuthContext';
 import './ScrumbanBoard.css';
 
 function ScrumbanBoard() {
+    const { user } = useAuth();
     const [sections, setSections] = useState([]);
     const [activeId, setActiveId] = useState(null); // For drag overlay
     const [activeTask, setActiveTask] = useState(null); // For modal (edit mode)
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+
+    const isManager = user?.primaryRole === 'MANAGER';
 
     const sensors = useSensors(
         useSensor(PointerSensor, { activationConstraint: { distance: 5 } }), // Prevent accidental drags
@@ -169,11 +173,14 @@ function ScrumbanBoard() {
             <div className="board-header">
                 <div className="board-title">
                     <h1>Sprints / Agile Board</h1>
+                    {!isManager && <p style={{ fontSize: '14px', color: '#6b7280', margin: '4px 0 0 0' }}>📖 Sadece Görüntüleme Modu</p>}
                 </div>
                 <div className="board-actions">
-                    <button className="add-task-btn" onClick={() => handleAddTask()}>
-                        <span>+</span> Görev Ekle
-                    </button>
+                    {isManager && (
+                        <button className="add-task-btn" onClick={() => handleAddTask()}>
+                            <span>+</span> Görev Ekle
+                        </button>
+                    )}
                 </div>
             </div>
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { getPendingLeaves, approveLeave, rejectLeave, getTeamLeaves } from '../services/leaveService';
+import { getManagedEmployees } from '../services/taskAssignmentService';
 import AnnouncementList from '../components/Announcements/AnnouncementList';
 import DashboardWidgets from '../components/Dashboard/DashboardWidgets';
 import logo from '../../assets/logo.png';
@@ -14,6 +15,7 @@ function ManagerDashboard() {
     const { user, logout, loading: authLoading } = useAuth();
     const [pendingLeaves, setPendingLeaves] = useState([]);
     const [allTeamLeaves, setAllTeamLeaves] = useState([]);
+    const [teamMembers, setTeamMembers] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [selectedLeave, setSelectedLeave] = useState(null);
     const [comment, setComment] = useState('');
@@ -22,6 +24,7 @@ function ManagerDashboard() {
     useEffect(() => {
         fetchPendingLeaves();
         fetchTeamLeaves();
+        fetchTeamMembers();
     }, []);
 
     const fetchPendingLeaves = async () => {
@@ -43,6 +46,17 @@ function ManagerDashboard() {
             }
         } catch (err) {
             console.error('Ekip izinleri yüklenemedi:', err);
+        }
+    };
+
+    const fetchTeamMembers = async () => {
+        try {
+            const result = await getManagedEmployees();
+            if (result.success) {
+                setTeamMembers(result.data);
+            }
+        } catch (err) {
+            console.error('Ekip üyeleri yüklenemedi:', err);
         }
     };
 
@@ -137,7 +151,7 @@ function ManagerDashboard() {
                         <div className="stat-icon">👥</div>
                         <div className="stat-info">
                             <h3>Ekip Üyeleri</h3>
-                            <p className="stat-number">2</p>
+                            <p className="stat-number">{teamMembers.length}</p>
                         </div>
                     </div>
 
@@ -164,6 +178,14 @@ function ManagerDashboard() {
                         <div className="stat-info">
                             <h3>Toplam Talep</h3>
                             <p className="stat-number">{allTeamLeaves.length}</p>
+                        </div>
+                    </div>
+
+                    <div className="stat-card" onClick={() => navigate('/agile-board')} style={{ cursor: 'pointer' }}>
+                        <div className="stat-icon">📋</div>
+                        <div className="stat-info">
+                            <h3>Projeler ve Görevler</h3>
+                            <p className="stat-number">Yönet →</p>
                         </div>
                     </div>
                 </div>

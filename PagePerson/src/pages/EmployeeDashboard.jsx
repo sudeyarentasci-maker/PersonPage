@@ -198,7 +198,7 @@ function EmployeeDashboard() {
                         <button
                             type="button"
                             className="feature-btn"
-                            onClick={() => navigate('/board')}
+                            onClick={() => navigate('/agile-board')}
                         >
                             Panoya Git
                         </button>

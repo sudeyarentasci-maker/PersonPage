@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
@@ -41,7 +41,7 @@ function TaskCard({ task, onClick, isOverlay }) {
             style={style}
             {...attributes}
             {...listeners}
-            className={`task-card ${isOverlay ? 'dragging' : ''} task-priority-${task.priority || 'medium'}`}
+            className={`task-card ${isOverlay ? 'dragging' : ''}`}
             onClick={() => {
                 // Prevent click when dragging ends
                 if (!isDragging) onClick();
@@ -75,9 +75,13 @@ function TaskCard({ task, onClick, isOverlay }) {
                     )}
                 </div>
 
-                <div className="task-assignee" title="Atanan Kişi">
-                    {/* Placeholder for assignee avatar - would map to user list */}
-                    👤
+                <div className="task-assignee-container">
+                    {task.assignedTo && (
+                        <span className="task-assignee-name">{task.assignedTo}</span>
+                    )}
+                    <div className="task-assignee" title="Atanan Kişi">
+                        👤
+                    </div>
                 </div>
             </div>
         </div>

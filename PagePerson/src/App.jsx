@@ -66,11 +66,11 @@ function App() {
             }
           />
 
-          {/* Scrumban Board */}
+          {/* Agile Board - For Managers and Employees */}
           <Route
-            path="/board"
+            path="/agile-board"
             element={
-              <ProtectedRoute allowedRoles={['SYSTEM_ADMIN', 'HR', 'MANAGER', 'EMPLOYEE']}>
+              <ProtectedRoute allowedRoles={['MANAGER', 'EMPLOYEE']}>
                 <ScrumbanBoard />
               </ProtectedRoute>
             }
