@@ -1,19 +1,24 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { changeUserManager, getManagerList } from '../../services/userService';
 
-function ChangeManagerModal({ user, onClose, onSuccess }) {
+function ChangeManagerModal({ isOpen, user, onClose, onSuccess }) {
     const [newManager, setNewManager] = useState('');
     const [managers, setManagers] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
 
     useEffect(() => {
-        fetchManagers();
-        // Set initial manager if exists
-        if (user.manager) {
-            setNewManager(user.manager);
+        if (isOpen) {
+            fetchManagers();
+            // Set initial manager if exists
+            if (user?.manager) {
+                setNewManager(user.manager);
+            } else {
+                setNewManager('');
+            }
         }
-    }, [user.manager]);
+    }, [isOpen, user]);
 
     const fetchManagers = async () => {
         try {
@@ -46,7 +51,9 @@ function ChangeManagerModal({ user, onClose, onSuccess }) {
         }
     };
 
-    return (
+    if (!isOpen) return null;
+
+    return ReactDOM.createPortal(
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
@@ -103,7 +110,8 @@ function ChangeManagerModal({ user, onClose, onSuccess }) {
                     </div>
                 </form>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }
 
