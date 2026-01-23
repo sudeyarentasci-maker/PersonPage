@@ -90,7 +90,7 @@ function TaskModal({ task, sections, onClose, onSave, onDelete }) {
                                 placeholder="Göreviniz için açıklayıcı bir başlık girin..."
                                 required
                                 autoFocus
-                                disabled={user?.primaryRole === 'EMPLOYEE'}
+                                disabled={user?.primaryRole === 'EMPLOYEE' || user?.primaryRole === 'HR'}
                             />
                         </div>
 
@@ -141,7 +141,7 @@ function TaskModal({ task, sections, onClose, onSave, onDelete }) {
                                     className="form-input"
                                     value={formData.priority}
                                     onChange={handleChange}
-                                    disabled={user?.primaryRole === 'EMPLOYEE'}
+                                    disabled={user?.primaryRole === 'EMPLOYEE' || user?.primaryRole === 'HR'}
                                 >
                                     <option value="low">Düşük</option>
                                     <option value="medium">Orta</option>
@@ -159,7 +159,7 @@ function TaskModal({ task, sections, onClose, onSave, onDelete }) {
                                 value={formData.description}
                                 onChange={handleChange}
                                 placeholder="Detaylı açıklama ekleyin..."
-                                disabled={user?.primaryRole === 'EMPLOYEE'}
+                                disabled={user?.primaryRole === 'EMPLOYEE' || user?.primaryRole === 'HR'}
                             />
                         </div>
 
@@ -172,7 +172,7 @@ function TaskModal({ task, sections, onClose, onSave, onDelete }) {
                                     className="form-input"
                                     value={formData.dueDate}
                                     onChange={handleChange}
-                                    disabled={user?.primaryRole === 'EMPLOYEE'}
+                                    disabled={user?.primaryRole === 'EMPLOYEE' || user?.primaryRole === 'HR'}
                                 />
                             </div>
                             <div className="form-group" style={{ flex: 1 }}>
@@ -183,7 +183,7 @@ function TaskModal({ task, sections, onClose, onSave, onDelete }) {
                                     value={formData.tags}
                                     onChange={handleChange}
                                     placeholder="Örn: Dev, Bug, UI, Feature (virgülle ayırın)"
-                                    disabled={user?.primaryRole === 'EMPLOYEE'}
+                                    disabled={user?.primaryRole === 'EMPLOYEE' || user?.primaryRole === 'HR'}
                                 />
                             </div>
                         </div>
@@ -203,9 +203,11 @@ function TaskModal({ task, sections, onClose, onSave, onDelete }) {
                         <button type="button" className="btn-cancel" onClick={onClose}>
                             İptal
                         </button>
-                        <button type="submit" className="btn-primary">
-                            Kaydet
-                        </button>
+                        {user?.primaryRole !== 'HR' && (
+                            <button type="submit" className="btn-primary">
+                                Kaydet
+                            </button>
+                        )}
                     </div>
                 </form>
             </div>

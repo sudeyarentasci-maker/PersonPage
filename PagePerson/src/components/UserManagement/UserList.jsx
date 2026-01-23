@@ -5,6 +5,7 @@ import UserActionsDropdown from './UserActionsDropdown';
 import ChangeEmailModal from './ChangeEmailModal';
 import ChangePasswordModal from './ChangePasswordModal';
 import ChangeRolesModal from './ChangeRolesModal';
+import ChangeManagerModal from './ChangeManagerModal';
 import './UserManagement.css';
 
 function UserList({ refreshTrigger, onUsersUpdated }) {
@@ -18,6 +19,7 @@ function UserList({ refreshTrigger, onUsersUpdated }) {
     const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
     const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
     const [isRolesModalOpen, setIsRolesModalOpen] = useState(false);
+    const [isManagerModalOpen, setIsManagerModalOpen] = useState(false);
 
     // Sadece HR kontrolü - Kullanıcı yönetimi artık sadece HR'ın sorumluluğunda
     const isHR = user?.roles?.some(role =>
@@ -79,6 +81,9 @@ function UserList({ refreshTrigger, onUsersUpdated }) {
                 break;
             case 'roles':
                 setIsRolesModalOpen(true);
+                break;
+            case 'manager':
+                setIsManagerModalOpen(true);
                 break;
             case 'status':
                 await handleStatusToggle(targetUser);
@@ -205,6 +210,16 @@ function UserList({ refreshTrigger, onUsersUpdated }) {
                         isOpen={isRolesModalOpen}
                         onClose={() => {
                             setIsRolesModalOpen(false);
+                            setSelectedUser(null);
+                        }}
+                        user={selectedUser}
+                        onSuccess={fetchUsers}
+                    />
+
+                    <ChangeManagerModal
+                        isOpen={isManagerModalOpen}
+                        onClose={() => {
+                            setIsManagerModalOpen(false);
                             setSelectedUser(null);
                         }}
                         user={selectedUser}

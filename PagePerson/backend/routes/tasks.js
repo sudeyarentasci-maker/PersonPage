@@ -24,7 +24,24 @@ router.get('/sections', authenticateToken, async (req, res) => {
             }
             // Managers see all tasks
 
-            return { ...section, tasks };
+            // Enrich tasks with employee email
+            const db = getDatabase();
+            const enrichedTasks = await Promise.all(tasks.map(async (task) => {
+                if (task.assignedTo) {
+                    const employee = await db.collection('users')
+                        .findOne({ userId: task.assignedTo }, { projection: { email: 1, firstName: 1, lastName: 1 } });
+                    return {
+                        ...task,
+                        assignedToEmail: employee?.email,
+                        assignedToName: employee?.firstName && employee?.lastName
+                            ? `${employee.firstName} ${employee.lastName}`
+                            : null
+                    };
+                }
+                return task;
+            }));
+
+            return { ...section, tasks: enrichedTasks };
         }));
 
         res.json({ success: true, data: sectionsWithTasks });

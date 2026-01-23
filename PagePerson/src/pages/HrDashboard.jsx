@@ -189,7 +189,7 @@ function HrDashboard() {
                         <button
                             type="button"
                             className="feature-btn"
-                            onClick={() => navigate('/board')}
+                            onClick={() => navigate('/agile-board')}
                         >
                             Panoya Git
                         </button>
@@ -200,8 +200,8 @@ function HrDashboard() {
                 <AnnouncementList key={announcementRefresh} />
 
                 {/* Kullanıcı Listesi */}
-                <UserList 
-                    refreshTrigger={refreshTrigger} 
+                <UserList
+                    refreshTrigger={refreshTrigger}
                     onUsersUpdated={(users) => {
                         setTotalUsers(users.length);
                     }}

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-function TaskCard({ task, onClick, isOverlay }) {
+function TaskCard({ task, onClick, isOverlay, readOnly }) {
     const {
         attributes,
         listeners,
@@ -10,7 +10,7 @@ function TaskCard({ task, onClick, isOverlay }) {
         transform,
         transition,
         isDragging
-    } = useSortable({ id: task._id });
+    } = useSortable({ id: task._id, disabled: readOnly });
 
     const style = {
         transform: CSS.Transform.toString(transform),
@@ -56,7 +56,7 @@ function TaskCard({ task, onClick, isOverlay }) {
                         <span key={tag} className="task-tag tag-dev">{tag}</span>
                     ))}
                 </div>
-                <button className="task-options-btn">•••</button>
+                {!readOnly && <button className="task-options-btn">•••</button>}
             </div>
 
             <div className="task-title">{task.title}</div>
@@ -77,7 +77,9 @@ function TaskCard({ task, onClick, isOverlay }) {
 
                 <div className="task-assignee-container">
                     {task.assignedTo && (
-                        <span className="task-assignee-name">{task.assignedTo}</span>
+                        <span className="task-assignee-name">
+                            {task.assignedToName || task.assignedToEmail || task.assignedTo}
+                        </span>
                     )}
                     <div className="task-assignee" title="Atanan Kişi">
                         👤

@@ -76,6 +76,12 @@ function UserActionsDropdown({ user, onAction }) {
                     >
                         🎭 Rol Değiştir
                     </button>
+                    <button
+                        className="dropdown-item"
+                        onClick={() => handleAction('manager')}
+                    >
+                        👔 Manager Değiştir
+                    </button>
                     <div className="dropdown-divider"></div>
                     <button
                         className="dropdown-item"

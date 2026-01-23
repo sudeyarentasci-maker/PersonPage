@@ -31,6 +31,7 @@ function ScrumbanBoard() {
     const [isLoading, setIsLoading] = useState(true);
 
     const isManager = user?.primaryRole === 'MANAGER';
+    const isHr = user?.primaryRole === 'HR';
 
     const sensors = useSensors(
         useSensor(PointerSensor, { activationConstraint: { distance: 5 } }), // Prevent accidental drags
@@ -198,6 +199,7 @@ function ScrumbanBoard() {
                             tasks={section.tasks}
                             onAddTask={() => handleAddTask(section._id)}
                             onEditTask={handleEditTask}
+                            readOnly={isHr}
                         />
                     ))}
                 </div>

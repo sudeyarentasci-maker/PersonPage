@@ -96,6 +96,22 @@ export async function changeOwnPassword(currentPassword, newPassword) {
     return response.data;
 }
 
+/**
+ * Manager listesini getir
+ */
+export async function getManagerList() {
+    const response = await api.get('/users/managers');
+    return response.data;
+}
+
+/**
+ * Kullanıcının manager'ını değiştir
+ */
+export async function changeUserManager(userId, managerId) {
+    const response = await api.put(`/users/${userId}/manager`, { managerId });
+    return response.data;
+}
+
 export default {
     createUser,
     getAllUsers,
@@ -106,5 +122,7 @@ export default {
     updateUserPassword,
     updateUserRoles,
     updateUserStatus,
-    changeOwnPassword
+    changeOwnPassword,
+    getManagerList,
+    changeUserManager
 };

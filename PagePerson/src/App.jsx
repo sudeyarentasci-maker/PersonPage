@@ -70,7 +70,7 @@ function App() {
           <Route
             path="/agile-board"
             element={
-              <ProtectedRoute allowedRoles={['MANAGER', 'EMPLOYEE']}>
+              <ProtectedRoute allowedRoles={['MANAGER', 'EMPLOYEE', 'HR']}>
                 <ScrumbanBoard />
               </ProtectedRoute>
             }

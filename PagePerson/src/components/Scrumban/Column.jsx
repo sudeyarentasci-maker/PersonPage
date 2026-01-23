@@ -3,7 +3,7 @@ import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import TaskCard from './TaskCard';
 
-function Column({ section, tasks, onAddTask, onEditTask }) {
+function Column({ section, tasks, onAddTask, onEditTask, readOnly }) {
     const { setNodeRef } = useDroppable({
         id: section._id,
     });
@@ -25,7 +25,7 @@ function Column({ section, tasks, onAddTask, onEditTask }) {
                     <span className="task-count">{tasks.length}</span>
                 </div>
                 <div className="column-actions">
-                    <button onClick={onAddTask} title="Görev Ekle">+</button>
+                    {!readOnly && <button onClick={onAddTask} title="Görev Ekle">+</button>}
                     <button title="Ayarlar">•••</button>
                 </div>
             </div>
@@ -41,6 +41,7 @@ function Column({ section, tasks, onAddTask, onEditTask }) {
                             key={task._id}
                             task={task}
                             onClick={() => onEditTask(task)}
+                            readOnly={readOnly}
                         />
                     ))}
                 </div>
