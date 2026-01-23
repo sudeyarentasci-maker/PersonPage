@@ -137,19 +137,39 @@ router.get('/', authenticateToken, authorizeRoles('HR', 'SYSTEM_ADMIN'), async (
             .project({ passwordHash: 0 }) // Şifre hash'ini gösterme
             .toArray();
 
-        // Her kullanıcı için rolleri al
-        const usersWithRoles = await Promise.all(users.map(async (user) => {
+        // Her kullanıcı için rolleri ve manager bilgisini al
+        const usersWithDetails = await Promise.all(users.map(async (user) => {
             const roles = await User.getUserRoles(user.userId);
+
+            // Get manager info from employee_manager collection
+            const managerRelation = await db.collection('employee_manager')
+                .findOne({ employeeId: user.userId });
+
+            let managerInfo = null;
+            if (managerRelation) {
+                const managerUser = await User.findByUserId(managerRelation.managerId);
+                if (managerUser) {
+                    managerInfo = {
+                        userId: managerUser.userId,
+                        email: managerUser.email,
+                        firstName: managerUser.firstName,
+                        lastName: managerUser.lastName
+                    };
+                }
+            }
+
             return {
                 ...user,
-                roles: roles.map(r => r.name)
+                roles: roles.map(r => r.name),
+                manager: managerRelation?.managerId || null,
+                managerInfo: managerInfo
             };
         }));
 
         res.json({
             success: true,
             data: {
-                users: usersWithRoles
+                users: usersWithDetails
             }
         });
 
@@ -227,6 +247,43 @@ router.get('/me', authenticateToken, async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Profil bilgisi alınamadı.'
+        });
+    }
+});
+
+/**
+ * GET /api/users/managers
+ * Get list of all managers for selection (SADECE HR)
+ * NOTE: This route MUST be defined before /api/users/:userId to avoid route matching issues
+ */
+router.get('/managers', authenticateToken, authorizeRoles('HR'), async (req, res) => {
+    try {
+        const db = getDatabase();
+
+        // Find all users who have MANAGER role
+        const managerRole = await db.collection('roles').findOne({ name: 'MANAGER' });
+
+        if (!managerRole) {
+            return res.json({ success: true, data: { managers: [] } });
+        }
+
+        const managerUserRoles = await db.collection('user_roles')
+            .find({ roleId: managerRole._id })
+            .toArray();
+
+        const managerUserIds = managerUserRoles.map(ur => ur.userId);
+
+        const managers = await db.collection('users')
+            .find({ userId: { $in: managerUserIds } })
+            .project({ userId: 1, email: 1, firstName: 1, lastName: 1 })
+            .toArray();
+
+        res.json({ success: true, data: { managers } });
+    } catch (error) {
+        console.error('Manager listesi hatası:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Manager listesi alınamadı.'
         });
     }
 });
@@ -728,41 +785,6 @@ router.delete('/:userId', authenticateToken, authorizeRoles('HR'), async (req, r
     }
 });
 
-/**
- * GET /api/users/managers
- * Get list of all managers for selection (SADECE HR)
- */
-router.get('/managers', authenticateToken, authorizeRoles('HR'), async (req, res) => {
-    try {
-        const db = getDatabase();
-
-        // Find all users who have MANAGER role
-        const managerRole = await db.collection('roles').findOne({ name: 'MANAGER' });
-
-        if (!managerRole) {
-            return res.json({ success: true, data: { managers: [] } });
-        }
-
-        const managerUserRoles = await db.collection('user_roles')
-            .find({ roleId: managerRole._id })
-            .toArray();
-
-        const managerUserIds = managerUserRoles.map(ur => ur.userId);
-
-        const managers = await db.collection('users')
-            .find({ userId: { $in: managerUserIds } })
-            .project({ userId: 1, email: 1, firstName: 1, lastName: 1 })
-            .toArray();
-
-        res.json({ success: true, data: { managers } });
-    } catch (error) {
-        console.error('Manager listesi hatası:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Manager listesi alınamadı.'
-        });
-    }
-});
 
 /**
  * PUT /api/users/:userId/manager
