@@ -1,5 +1,6 @@
 import express from 'express';
 import { User } from '../models/User.js';
+import Task from '../models/Task.js'; // Import Task model
 import { authenticateToken, authorizeRoles } from '../middleware/auth.js';
 import { generateRandomPassword } from '../utils/passwordGenerator.js';
 import { generateUserId } from '../utils/userIdGenerator.js';
@@ -808,6 +809,9 @@ router.put('/:userId/manager', authenticateToken, authorizeRoles('HR'), async (r
                 assignedAt: new Date()
             });
         }
+
+        // Manager değiştiği için, çalışanın mevcut görevlerini boşa düşür
+        await Task.unassignAllFromUser(userId);
 
         // Log the action
         await logUserAction(

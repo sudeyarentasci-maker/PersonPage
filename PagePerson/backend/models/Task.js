@@ -169,6 +169,36 @@ class Task {
             sectionId: todoSection._id
         });
     }
+
+    // Bir kullanıcıya atanmış tüm görevlerin atamasını kaldır (Manager değişikliğinde)
+    static async unassignAllFromUser(userId) {
+        const db = getDatabase();
+
+        // Sadece tamamlanmamış görevleri etkilemeliyiz
+        // "Tamamlandı" bölümünü bul
+        const completedSection = await db.collection('sections').findOne({
+            title: { $regex: /tamamland/i }
+        });
+
+        const query = { assignedTo: userId };
+        if (completedSection) {
+            query.sectionId = { $ne: completedSection._id };
+        }
+
+        const result = await db.collection('tasks').updateMany(
+            query,
+            {
+                $set: {
+                    assignedTo: null,
+                    updatedAt: new Date()
+                }
+            }
+        );
+
+        console.log(`Unassigned ${result.modifiedCount} tasks from user ${userId}`);
+        return result;
+    }
 }
 
 export default Task;
+
