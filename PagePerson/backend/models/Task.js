@@ -153,6 +153,22 @@ class Task {
 
         return await db.collection('tasks').countDocuments(query);
     }
+
+    // Kullanıcıya atanan YENİ görevleri say (Yapılacaklar sütunundaki)
+    static async countNewAssignments(userId) {
+        const db = getDatabase();
+        // "Yapılacaklar" sütununu bul
+        const todoSection = await db.collection('sections').findOne({
+            title: { $regex: /yapılacaklar/i }
+        });
+
+        if (!todoSection) return 0;
+
+        return await db.collection('tasks').countDocuments({
+            assignedTo: userId,
+            sectionId: todoSection._id
+        });
+    }
 }
 
 export default Task;

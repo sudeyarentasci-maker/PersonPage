@@ -49,3 +49,8 @@ export const createSection = async (sectionData) => {
     const response = await api.post('/tasks/sections', sectionData);
     return response.data;
 };
+
+export const getNewTasksCount = async () => {
+    const response = await api.get('/tasks/new-tasks-count');
+    return response.data;
+};

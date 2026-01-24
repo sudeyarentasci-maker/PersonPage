@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { createLeaveRequest, getMyLeaves, getLeaveStats } from '../services/leaveService';
+import { getNewTasksCount } from '../services/taskService';
 import AnnouncementList from '../components/Announcements/AnnouncementList';
 import DashboardWidgets from '../components/Dashboard/DashboardWidgets';
 import logo from '../../assets/logo.png';
@@ -16,6 +17,7 @@ function EmployeeDashboard() {
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+    const [newTaskCount, setNewTaskCount] = useState(0);
 
     // Form state
     const [formData, setFormData] = useState({
@@ -28,7 +30,19 @@ function EmployeeDashboard() {
     useEffect(() => {
         fetchLeaves();
         fetchStats();
+        fetchTaskCount();
     }, []);
+
+    const fetchTaskCount = async () => {
+        try {
+            const result = await getNewTasksCount();
+            if (result.success) {
+                setNewTaskCount(result.data.count);
+            }
+        } catch (err) {
+            console.error('Görev sayısı alınamadı:', err);
+        }
+    };
 
     const fetchLeaves = async () => {
         try {
@@ -192,7 +206,12 @@ function EmployeeDashboard() {
                         <button className="feature-btn">Duyuruları Gör</button>
                     </div>
 
-                    <div className="feature-card">
+                    <div className="feature-card" style={{ position: 'relative' }}>
+                        {newTaskCount > 0 && (
+                            <div className="notification-dot">
+                                {newTaskCount}
+                            </div>
+                        )}
                         <h3>🚀 Projeler & Görevler</h3>
                         <p>Agile/Scrumban panosuna git</p>
                         <button

@@ -100,6 +100,16 @@ router.get('/assigned-count', authenticateToken, async (req, res) => {
     }
 });
 
+// Get count of NEW tasks (in Todo column) for notification
+router.get('/new-tasks-count', authenticateToken, async (req, res) => {
+    try {
+        const count = await Task.countNewAssignments(req.user.userId);
+        res.json({ success: true, data: { count } });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
 router.post('/tasks', authenticateToken, async (req, res) => {
     try {
         // Only managers can create tasks
